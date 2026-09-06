@@ -82,7 +82,19 @@ def run_unet(train, test, stats, epochs=40, batch=8, lr=3e-4, width=32, seed=0):
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     mask_t = torch.from_numpy(stats["mask"]).to(dev)
 
-    ds = TensorDataset(torch.from_numpy(train.x), torch.from_numpy(train.y))
+    # Chronological validation split off the END of training. Epoch count is
+    # chosen on this, never on the test year — otherwise "we trained longer"
+    # is just tuning on the answer, and the reported skill is inflated.
+    # Chronological, not random: consecutive days are near-identical, so a
+    # random split would leak training days into validation.
+    n_val = int(round(0.15 * len(train.x)))
+    cut = len(train.x) - n_val
+    xtr, ytr = train.x[:cut], train.y[:cut]
+    xva = torch.from_numpy(train.x[cut:]).to(dev)
+    yva = torch.from_numpy(train.y[cut:]).to(dev)
+    print(f"  split: {cut} train days, {n_val} val days (chronological)")
+
+    ds = TensorDataset(torch.from_numpy(xtr), torch.from_numpy(ytr))
     dl = DataLoader(ds, batch_size=batch, shuffle=True, drop_last=True)
 
     net = UNet(train.x.shape[1], train.y.shape[1], width=width).to(dev)
@@ -91,7 +103,18 @@ def run_unet(train, test, stats, epochs=40, batch=8, lr=3e-4, width=32, seed=0):
     n_par = sum(p.numel() for p in net.parameters())
     print(f"UNet {n_par/1e6:.2f}M params on {dev}, {len(ds)} train days")
 
+    def val_loss() -> float:
+        net.eval()
+        tot = k = 0.0
+        with torch.no_grad():
+            for i in range(0, len(xva), batch):
+                tot += float(masked_mse(net(xva[i:i + batch]).float(),
+                                        yva[i:i + batch], mask_t))
+                k += 1
+        return tot / max(k, 1)
+
     t0 = time.time()
+    best = (float("inf"), -1, None)
     for ep in range(epochs):
         net.train()
         tot = k = 0
@@ -105,8 +128,16 @@ def run_unet(train, test, stats, epochs=40, batch=8, lr=3e-4, width=32, seed=0):
             opt.step()
             tot += loss.item(); k += 1
         sched.step()
-        if ep % 5 == 0 or ep == epochs - 1:
-            print(f"  epoch {ep:3d}  loss {tot/k:.4f}  {time.time()-t0:5.0f}s")
+
+        vl = val_loss()
+        if vl < best[0]:
+            best = (vl, ep, {k2: v.detach().clone() for k2, v in net.state_dict().items()})
+        if ep % 10 == 0 or ep == epochs - 1:
+            print(f"  epoch {ep:3d}  train {tot/k:.4f}  val {vl:.4f}  {time.time()-t0:5.0f}s")
+
+    print(f"  best val {best[0]:.4f} at epoch {best[1]} of {epochs}")
+    if best[2] is not None:
+        net.load_state_dict(best[2])          # test the selected model, not the last one
 
     net.eval()
     preds = []
@@ -119,7 +150,9 @@ def run_unet(train, test, stats, epochs=40, batch=8, lr=3e-4, width=32, seed=0):
     OUT.mkdir(parents=True, exist_ok=True)
     torch.save(net.state_dict(), OUT / "unet.pt")
     return _report("unet", pred, test, stats,
-                   dict(params=n_par, epochs=epochs, seconds=round(time.time() - t0)))
+                   dict(params=n_par, epochs=epochs, best_epoch=best[1],
+                        best_val_loss=best[0], val_days=n_val,
+                        seconds=round(time.time() - t0)))
 
 
 # --------------------------------------------------------------------------- #
