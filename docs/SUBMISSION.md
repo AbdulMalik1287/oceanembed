@@ -1,0 +1,248 @@
+# SIH26066 OceanEmbed — submission content
+
+Slide-by-slide content for the SIH idea submission and the internal round.
+Written to the standard five-section SIH template; paste into the official
+deck and re-style. Speaker notes are what to *say*, not what to put on the slide.
+
+**The one thing that differentiates this submission: it is not a proposal. It is
+built, it runs, and the numbers below are measured on a held-out year.** Most
+entries at this stage describe an intended approach. Lead with that difference
+and never bury it.
+
+---
+
+## Slide 1 — Title
+
+**OceanEmbed**
+Satellite Embedding-Based Deep Learning Framework for Reconstruction of
+Subsurface Ocean Temperature from Surface Satellite Observations
+
+PS SIH26066 · Ministry of Earth Sciences · INCOIS · Software · Team <name>
+
+> **Say:** "We've built and evaluated this, not just designed it. Everything you'll
+> see is measured on a year the model never saw."
+
+---
+
+## Slide 2 — The problem
+
+**The ocean is opaque below the surface.**
+
+- Subsurface temperature drives cyclone intensification, marine heatwaves,
+  fisheries, and monsoon coupling.
+- It is measured by **Argo floats** — roughly one profile per 3°×3° box per
+  10 days. Sparse in space, sparse in time.
+- Satellites see the surface **continuously, basin-wide, daily** — but only the
+  surface.
+- Result: for any given day, the 3D state of the North Indian Ocean is unknown
+  almost everywhere.
+
+> **Say:** "The gap isn't sensors, it's dimensionality. We have excellent daily
+> coverage of a 2D slice of a 3D problem."
+
+---
+
+## Slide 3 — Proposed solution
+
+**Learn the mapping from the surface pattern to the vertical profile.**
+
+Surface fields carry indirect signatures of what lies beneath — thermocline
+displacement shows up in sea level, eddies in surface currents, mixing in wind
+history. A deep network can learn that relationship where a formula cannot.
+
+```
+SST, SSS, SLA, currents (u,v), winds (u,v)     7 daily surface fields
+                    ↓
+        satellite embedding (encoder)          compact latent ocean state
+                    ↓
+          reconstruction (decoder)
+                    ↓
+   temperature at 15 depths, 0–1000 m          daily, 0.25°, basin-wide
+```
+
+**Innovation & uniqueness**
+
+1. The **embedding is the bottleneck of a single U-Net**, not a separately
+   pre-trained autoencoder — encoder and decoder are trained jointly on the
+   actual objective, so the latent space is optimised for reconstruction rather
+   than for compressing the inputs.
+2. The model predicts **anomaly from climatology**, not absolute temperature, so
+   its reported skill is skill beyond the seasonal cycle rather than credit for
+   knowing the calendar.
+3. We output **operational diagnostics**, not just temperature — including
+   Tropical Cyclone Heat Potential, which no satellite can measure directly.
+
+---
+
+## Slide 4 — Technical approach
+
+**Data** — all from Copernicus Marine, one credential, fully reproducible:
+OSTIA SST (0.05°), multi-obs SSS, DUACS SLA, GLOBCURRENT surface currents,
+L4 scatterometer winds. Target: GLORYS12V1 reanalysis at 1/12°, 50 levels.
+
+**Pipeline** — 100 × 240 cells at 0.25°, cell-centred so that five of six inputs
+regrid by exact integer-factor area-mean coarsening with **no interpolation at
+all**, which keeps the coastline sharp. Vertical interpolation from GLORYS's 36
+native levels to the 15 depths the PS specifies.
+
+**Model** — U-Net, 1.93 M parameters. Encoder 32→64→128, bottleneck 256 × 13 × 30
+(the satellite embedding, 2.6× compression), decoder with skip connections,
+1×1 head to 15 depths. AdamW, cosine schedule, bf16, masked MSE on per-depth
+normalised anomalies. **Trains in 65 seconds** on one MIG slice of an RTX PRO
+6000 Blackwell.
+
+**Evaluation** — train 2019–2020, test on all 365 days of 2021, held out and
+scored once. Epoch count chosen on a chronological validation split, never on
+the test year.
+
+> **Say:** "Split by year, never randomly. Consecutive days in the ocean are
+> nearly identical, so a random split would hand us a fake 0.99 correlation."
+
+---
+
+## Slide 5 — Results
+
+**We beat the climatology baseline by 13.8%, and by 21.3% at the thermocline.**
+
+| | mean RMSE | RMSE @100 m | ACC @100 m |
+|---|---:|---:|---:|
+| Climatology (floor) | 1.031 °C | 2.190 °C | — |
+| Per-depth linear | 0.934 °C | 1.910 °C | 0.562 |
+| **OceanEmbed U-Net** | **0.889 °C** | **1.723 °C** | **0.636** |
+
+*Figure: `01_skill_by_depth.png`*
+
+The gain is concentrated at **75–150 m** — exactly the depths where the answer
+cannot be read off the temperature directly overhead and must be inferred from
+mesoscale structure. That is the physical hypothesis, and it held.
+
+> **Say:** "The linear model sees each cell's own surface state. The U-Net sees
+> the surrounding pattern. The gap between them at 100 m *is* the value of
+> spatial context — that's why the architecture is what it is."
+
+**We also report where it does not work:** below 300 m there is no useful skill.
+Daily surface fields carry almost no information about 500–1000 m. We say so
+rather than average it away.
+
+> **Say:** "Any model claiming skill at 1000 m from surface data alone should
+> make you suspicious."
+
+---
+
+## Slide 6 — Why INCOIS should care: cyclone heat potential
+
+**Tropical Cyclone Heat Potential — reconstructed at 0.86 correlation.**
+
+*Figure: `04_tchp.png`*
+
+| Diagnostic | RMSE | correlation |
+|---|---:|---:|
+| **TCHP** | 20.3 kJ cm⁻² | **0.864** |
+| D26 (26 °C isotherm depth) | 16.7 m | 0.769 |
+| Mixed layer depth | 16.6 m | 0.690 |
+
+TCHP is the operational predictor of **cyclone rapid intensification** in the Bay
+of Bengal. Two cyclones crossing water with *identical* sea surface temperature
+behave completely differently depending on how deep the warm layer runs: a deep
+one keeps feeding the storm even after its own winds churn the surface, a
+shallow one cools and starves it.
+
+**That difference is invisible to a satellite.** It requires the vertical
+profile — which is what this system reconstructs, daily and basin-wide.
+
+> **Say:** "This is the answer to 'so what'. We're not producing a temperature
+> field for its own sake, we're producing the variable a warning centre actually
+> uses, on days when no float is anywhere near the storm."
+
+---
+
+## Slide 7 — Feasibility and viability
+
+**Already demonstrated**
+
+- End-to-end pipeline runs unattended: acquisition → harmonisation → training →
+  scoring → standardized netCDF output.
+- 28.8 GB of real data processed; 3-year proof of concept complete.
+- 16 automated correctness assertions covering regridding, land masking, depth
+  interpolation and loss behaviour.
+
+**Cost is trivial.** Training is 65 seconds. Scaling to the full 2010–2024 record
+is ~144 GB and one overnight download — the constraint is bandwidth, never
+compute. Inference for an operational daily product is seconds.
+
+**Risks, and how they are handled**
+
+| Risk | Mitigation |
+|---|---|
+| GLORYS assimilates Argo, so training on it partly emulates a DA system | Validate against **raw Argo profiles**, not just gridded products; state the limitation openly |
+| Satellite salinity before 2010 is a reconstruction, not a retrieval | Restrict the operational record to 2007+, where all inputs are genuine retrievals |
+| Coastal cells lost to regridding | Masked conservative regridding if coastal skill proves to matter |
+| Short climatology biases the reference | Swap in the CMEMS long-term monthly climatology |
+
+> **Say:** "We know the sharpest question you can ask is that GLORYS already ate
+> the Argo data. We'd rather raise it ourselves than have you find it."
+
+---
+
+## Slide 8 — Impact and benefits
+
+**Direct users:** INCOIS ocean forecasting and hazard-warning services, IMD
+cyclone forecasting, Indian Navy, marine fisheries advisories.
+
+- **Disaster management** — daily basin-wide TCHP for cyclone intensity guidance,
+  in a basin responsible for a disproportionate share of global cyclone deaths.
+- **Fisheries** — thermocline and mixed layer depth drive the Potential Fishing
+  Zone advisories that reach lakhs of small-vessel fishers.
+- **Climate monitoring** — upper-ocean heat content and marine heatwave detection
+  with vertical structure, not just a surface signature.
+- **Cost** — built entirely on open Copernicus data with a 1.9 M parameter model.
+  No new sensors, no new missions, no proprietary inputs.
+
+---
+
+## Slide 9 — Research and references
+
+- Problem statement SIH26066, INCOIS / Ministry of Earth Sciences
+- GLORYS12V1 Global Ocean Physics Reanalysis — https://doi.org/10.48670/moi-00021
+- OSTIA SST — https://doi.org/10.48670/moi-00168
+- DUACS sea level — https://doi.org/10.48670/moi-00145
+- Multi-observation sea surface salinity — https://doi.org/10.48670/moi-00051
+- Ronneberger, Fischer & Brox (2015), *U-Net: Convolutional Networks for
+  Biomedical Image Segmentation*
+- Argo programme, and the INCOIS Live Access Server gridded Argo product
+- Leipper & Volgenau (1972), *Hurricane heat potential of the Gulf of Mexico* —
+  the origin of TCHP as an operational quantity
+
+**Code:** github.com/AbdulMalik1287/oceanembed
+
+---
+
+## Anticipated questions
+
+**"Isn't this circular — GLORYS already assimilates Argo?"**
+Partly, and we say so. Training against a reanalysis means learning to emulate a
+data-assimilation system, which is why gridded-Argo validation is only
+semi-independent. The honest test is raw Argo profiles on held-out years. It is
+the next thing we build. Note also that the operational value stands regardless:
+GLORYS is not available in real time at this latency, and our model runs from
+surface fields alone in seconds.
+
+**"Why not just use Argo directly?"**
+Coverage. One profile per 3°×3° per 10 days cannot produce a daily basin-wide
+field, and cyclone forecasting needs the field on the day the storm is there.
+
+**"Why a U-Net and not a transformer?"**
+731 training days. At that scale a 2 M parameter convolutional model is the right
+capacity, and ViT variants are in the plan as an ablation. We picked based on
+data size, not fashion.
+
+**"Your model is worse than climatology below 500 m."**
+Correct, and reported. Surface observations carry almost no information about
+those depths on daily timescales. The useful range is surface to ~300 m — which
+covers the mixed layer, the thermocline, and everything that drives heat content
+and cyclone potential.
+
+**"What's the real-world latency?"**
+Inference is seconds. The binding constraint is input availability — the
+near-real-time versions of these same products are published daily, so an
+operational build would run on NRT inputs with the same weights.
