@@ -260,6 +260,54 @@ def build_inputs(year: int) -> Path:
 
 
 # --------------------------------------------------------------------------- #
+def verify_year(year: int) -> bool:
+    """Open both processed cubes and check their shape. Cheap, and the only
+    thing standing between a truncated file and a silently poisoned training
+    set."""
+    try:
+        with xr.open_dataset(PROC / f"target_{year}.nc") as ds:
+            assert ds.sizes["latitude"] == 100 and ds.sizes["longitude"] == 240
+            assert ds.sizes["depth"] == len(STD_DEPTHS)
+        with xr.open_dataset(PROC / f"inputs_{year}.nc") as ds:
+            assert ds.sizes["latitude"] == 100 and ds.sizes["longitude"] == 240
+            assert "depth" not in ds.sizes and len(ds.data_vars) == len(CHANNELS)
+        return True
+    except Exception as e:
+        print(f"  VERIFY FAILED {year}: {type(e).__name__}: {e}")
+        return False
+
+
+def stage_year(year: int, keep_raw: bool = False) -> bool:
+    """fetch -> build -> verify -> delete raw, one year at a time.
+
+    A full record does not fit on disk as raw files (~9.6 GB/year against
+    ~137 GB free), but the processed cubes are only ~0.8 GB/year. Staging keeps
+    peak usage at roughly one year of raw. Raw is deleted ONLY after both cubes
+    have been opened and checked — never on the assumption that the build
+    finished.
+    """
+    print(f"=== {year}")
+    for key, spec in {**INPUTS, "glorys": TARGET["glorys"]}.items():
+        fetch(key, year, spec, RAW)
+    build_target(year)
+    build_inputs(year)
+
+    if not verify_year(year):
+        print(f"  keeping raw for {year} so the build can be retried")
+        return False
+    if keep_raw:
+        return True
+
+    freed = 0
+    for key in list(INPUTS) + ["glorys"]:
+        f = RAW / f"{key}_{year}.nc"
+        if f.exists():
+            freed += f.stat().st_size
+            f.unlink()
+    print(f"  verified; freed {freed / 1024**3:.1f} GB of raw for {year}")
+    return True
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -272,6 +320,9 @@ def main() -> None:
     b.add_argument("year", type=int)
     i = sub.add_parser("build-inputs")
     i.add_argument("year", type=int)
+    st = sub.add_parser("stage", help="fetch -> build -> verify -> delete raw, per year")
+    st.add_argument("--years", type=int, nargs="+", required=True)
+    st.add_argument("--keep-raw", action="store_true")
 
     a = ap.parse_args()
     RAW.mkdir(parents=True, exist_ok=True)
@@ -287,6 +338,12 @@ def main() -> None:
         build_target(a.year)
     elif a.cmd == "build-inputs":
         build_inputs(a.year)
+    elif a.cmd == "stage":
+        failed = [y for y in a.years if not stage_year(y, keep_raw=a.keep_raw)]
+        print(f"\nstaged {len(a.years) - len(failed)}/{len(a.years)} years"
+              + (f"; FAILED: {failed}" if failed else ""))
+        if failed:
+            sys.exit(1)
 
 
 if __name__ == "__main__":
