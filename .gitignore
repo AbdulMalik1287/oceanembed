@@ -1,0 +1,25 @@
+# Data never goes in git — it is 29 GB of raw and ~1 GB of processed cubes,
+# all of it reproducible with `python -m scripts.pipeline fetch-all`.
+*.nc
+*.nc.*
+*.zarr/
+data/
+raw/
+proc/
+
+# Model artefacts and run outputs
+*.pt
+*.pth
+runs/
+
+# Credentials — belong in ~/.copernicusmarine or the environment, never here
+.copernicusmarine*
+.netrc
+*.pem
+.env
+
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.impeccable/
+.DS_Store
