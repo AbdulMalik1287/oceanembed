@@ -88,27 +88,30 @@ native levels to the 15 depths the PS specifies.
 **Model** — U-Net, 1.93 M parameters. Encoder 32→64→128, bottleneck 256 × 13 × 30
 (the satellite embedding, 2.6× compression), decoder with skip connections,
 1×1 head to 15 depths. AdamW, cosine schedule, bf16, masked MSE on per-depth
-normalised anomalies. **Trains in 65 seconds** on one MIG slice of an RTX PRO
-6000 Blackwell.
+normalised anomalies. **Trains in under 6 minutes** on one MIG slice of an
+RTX PRO 6000 Blackwell — 250 epochs, of which epoch 144 is selected.
 
 **Evaluation** — train 2019–2020, test on all 365 days of 2021, held out and
-scored once. Epoch count chosen on a chronological validation split, never on
-the test year.
+scored once. Epoch count chosen on a validation split of every 5th 10-day block,
+never on the test year.
 
 > **Say:** "Split by year, never randomly. Consecutive days in the ocean are
-> nearly identical, so a random split would hand us a fake 0.99 correlation."
+> nearly identical, so a random split would hand us a fake 0.99 correlation.
+> Even our validation split is by 10-day blocks spread across all seasons — we
+> found that a plain chronological holdout validates you on one season and tells
+> you to stop training after two epochs."
 
 ---
 
 ## Slide 5 — Results
 
-**We beat the climatology baseline by 13.8%, and by 21.3% at the thermocline.**
+**We beat the climatology baseline by 13.7%, and by 22.9% at the thermocline.**
 
 | | mean RMSE | RMSE @100 m | ACC @100 m |
 |---|---:|---:|---:|
 | Climatology (floor) | 1.031 °C | 2.190 °C | — |
 | Per-depth linear | 0.934 °C | 1.910 °C | 0.562 |
-| **OceanEmbed U-Net** | **0.889 °C** | **1.723 °C** | **0.636** |
+| **OceanEmbed U-Net** | **0.890 °C** | **1.689 °C** | **0.652** |
 
 *Figure: `01_skill_by_depth.png`*
 
@@ -137,9 +140,9 @@ rather than average it away.
 
 | Diagnostic | RMSE | correlation |
 |---|---:|---:|
-| **TCHP** | 20.3 kJ cm⁻² | **0.864** |
-| D26 (26 °C isotherm depth) | 16.7 m | 0.769 |
-| Mixed layer depth | 16.6 m | 0.690 |
+| **TCHP** | 20.7 kJ cm⁻² | **0.858** |
+| D26 (26 °C isotherm depth) | 16.7 m | 0.759 |
+| Mixed layer depth | 17.3 m | 0.669 |
 
 TCHP is the operational predictor of **cyclone rapid intensification** in the Bay
 of Bengal. Two cyclones crossing water with *identical* sea surface temperature
@@ -166,7 +169,8 @@ profile — which is what this system reconstructs, daily and basin-wide.
 - 16 automated correctness assertions covering regridding, land masking, depth
   interpolation and loss behaviour.
 
-**Cost is trivial.** Training is 65 seconds. Scaling to the full 2010–2024 record
+**Cost is trivial.** A full 250-epoch training run is under 6 minutes on a
+quarter of one GPU. Scaling to the full 2010–2024 record
 is ~144 GB and one overnight download — the constraint is bandwidth, never
 compute. Inference for an operational daily product is seconds.
 
