@@ -116,6 +116,15 @@ def build(train_years, test_years) -> tuple[Split, Split, dict]:
         # becomes 0, i.e. the channel mean. ponytail: no per-channel validity
         # mask channel yet — add one if gap-heavy days turn out to hurt.
         z = np.nan_to_num(z, nan=0.0).astype("float32")
+        # Blank everything outside the ocean mask. The input products do not
+        # share the target's land mask: OSTIA carries inland lakes, and this
+        # box reaches the Tibetan Plateau, so SST over "land" can read 0.7 degC
+        # — physically impossible seawater. Those cells are already outside the
+        # loss and the normalisation statistics, but convolutions have a
+        # receptive field, so junk on land propagates into coastal ocean
+        # predictions. Zeroing gives land a single consistent value, which also
+        # acts as an implicit land channel.
+        z[:, :, ~mask] = 0.0
         return np.concatenate([z, _static_channels(times, z.shape[-2:])], axis=1)
 
     # Target: anomaly from the training climatology, normalised per depth so the
