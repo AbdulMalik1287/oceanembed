@@ -17,7 +17,9 @@ Reconstruct daily depth-wise subsurface ocean temperature over the North Indian 
 | Data | 3 years (2019–2021) downloaded and built — 28.8 GB raw, 6 processed cubes |
 | Baselines + U-Net | **run.** U-Net mean RMSE **0.889 °C** vs **1.031 °C** climatology (+13.8%) |
 | Peak skill | **+21.3% at 100 m**, ACC 0.636 — the thermocline |
-| Open | ARGO validation, netCDF export, BoB/Arabian Sea demo, ViT ablations |
+| Diagnostics | TCHP corr **0.864**, D26 0.769, MLD 0.690 — none computable from SST alone |
+| Output | `pred_2021.nc` standardized daily netCDF; 4 figures in `figs/` |
+| Open | ARGO validation, cyclone case study, ViT ablations |
 
 ## Environment
 

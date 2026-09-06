@@ -66,6 +66,32 @@ The reference climatology is itself −0.628 °C off at 100 m: 2021 was warmer a
 than the 2019–2020 mean. Both models *partially correct* it, to about −0.52 °C. So the bias is a
 two-year climatology being too short to represent the seasonal norm, not a modelling failure.
 
+## Operational diagnostics — what this buys a warning centre
+
+None of these can be computed from SST alone; every one needs the vertical profile. Scored on 2021
+against GLORYS, over wet cells.
+
+| Diagnostic | RMSE | correlation |
+|---|---:|---:|
+| **TCHP** — tropical cyclone heat potential | 20.3 kJ cm⁻² | **0.864** |
+| D26 — depth of the 26 °C isotherm | 16.7 m | 0.769 |
+| MLD — mixed layer depth | 16.6 m | 0.690 |
+
+**TCHP is the one that matters for the Disaster Management theme.** It is the operational predictor
+of cyclone rapid intensification in the Bay of Bengal: a deep warm layer keeps feeding a storm even
+after its own winds have mixed the surface, whereas a shallow one cools and starves it. Two
+cyclones over identical SST can behave completely differently, and the difference is invisible to a
+satellite. Reconstructing the profile makes it visible — at 0.86 correlation, daily, basin-wide.
+
+## Figures
+
+| File | Shows |
+|---|---|
+| `figs/01_skill_by_depth.png` | RMSE and ACC vs depth, all three models, thermocline band marked |
+| `figs/02_acc_map_100m.png` | where the model has skill, at 100 m |
+| `figs/03_profiles.png` | reconstructed vs GLORYS profiles, Arabian Sea and Bay of Bengal, four dates |
+| `figs/04_tchp.png` | TCHP maps, agreement scatter, and the 2021 seasonal cycle |
+
 ## Next steps, cheapest first
 
 1. **Use the CMEMS long-term monthly climatology**
@@ -80,7 +106,7 @@ two-year climatology being too short to represent the seasonal norm, not a model
 ## Still open (problem statement deliverables)
 
 - Independent ARGO validation (deliverable #5)
-- Writing the reconstructed field out as standardized daily netCDF (deliverable #4 is only partly
-  met — predictions are scored but not exported)
-- Bay of Bengal / Arabian Sea proof-of-concept demonstration (deliverable #6)
+- ~~Standardized daily netCDF export~~ — **done**, `scripts/predict.py` writes `pred_YYYY.nc`
+  (deliverable #4)
+- Bay of Bengal / Arabian Sea demonstration (deliverable #6) — figures exist; needs a narrative case study, ideally a named 2021 cyclone
 - ViT / attention ablations, which the PS lists as candidate architectures
