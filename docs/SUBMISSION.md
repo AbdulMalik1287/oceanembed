@@ -5,7 +5,7 @@ Written to the standard five-section SIH template; paste into the official
 deck and re-style. Speaker notes are what to *say*, not what to put on the slide.
 
 **The one thing that differentiates this submission: it is not a proposal. It is
-built, it runs, and the numbers below are measured on a held-out year.** Most
+built, it runs, and the numbers below are measured on two held-out years.** Most
 entries at this stage describe an intended approach. Lead with that difference
 and never bury it.
 
@@ -20,7 +20,7 @@ Subsurface Ocean Temperature from Surface Satellite Observations
 PS SIH26066 · Ministry of Earth Sciences · INCOIS · Software · Team <name>
 
 > **Say:** "We've built and evaluated this, not just designed it. Everything you'll
-> see is measured on a year the model never saw."
+> see is measured on two full years the model never saw."
 
 ---
 
@@ -88,12 +88,12 @@ native levels to the 15 depths the PS specifies.
 **Model** — U-Net, 1.93 M parameters. Encoder 32→64→128, bottleneck 256 × 13 × 30
 (the satellite embedding, 2.6× compression), decoder with skip connections,
 1×1 head to 15 depths. AdamW, cosine schedule, bf16, masked MSE on per-depth
-normalised anomalies. **Trains in under 6 minutes** on one MIG slice of an
-RTX PRO 6000 Blackwell — 250 epochs, of which epoch 144 is selected.
+normalised anomalies. **Trains in 36 minutes** on one MIG slice of an
+RTX PRO 6000 Blackwell — 250 epochs, of which epoch 177 is selected.
 
-**Evaluation** — train 2019–2020, test on all 365 days of 2021, held out and
-scored once. Epoch count chosen on a validation split of every 5th 10-day block,
-never on the test year.
+**Evaluation** — train 2014–2019 (2,192 days), test on **2020 and 2021** in
+full (731 days), held out and scored once. Epoch count chosen on a validation
+split of every 5th 10-day block, never on the test years.
 
 > **Say:** "Split by year, never randomly. Consecutive days in the ocean are
 > nearly identical, so a random split would hand us a fake 0.99 correlation.
@@ -105,13 +105,14 @@ never on the test year.
 
 ## Slide 5 — Results
 
-**We beat the climatology baseline by 13.7%, and by 22.9% at the thermocline.**
+**We beat the climatology baseline by 11.9%, and by 20.2% at the thermocline —
+tested on two full years the model has never seen.**
 
 | | mean RMSE | RMSE @100 m | ACC @100 m |
 |---|---:|---:|---:|
-| Climatology (floor) | 1.031 °C | 2.190 °C | — |
-| Per-depth linear | 0.934 °C | 1.910 °C | 0.562 |
-| **OceanEmbed U-Net** | **0.890 °C** | **1.689 °C** | **0.652** |
+| Climatology (floor) | 0.889 °C | 1.773 °C | — |
+| Per-depth linear | 0.786 °C | 1.485 °C | 0.555 |
+| **OceanEmbed U-Net** | **0.783 °C** | **1.415 °C** | **0.608** |
 
 *Figure: `01_skill_by_depth.png`*
 
@@ -123,26 +124,35 @@ mesoscale structure. That is the physical hypothesis, and it held.
 > the surrounding pattern. The gap between them at 100 m *is* the value of
 > spatial context — that's why the architecture is what it is."
 
-**We also report where it does not work:** below 300 m there is no useful skill.
-Daily surface fields carry almost no information about 500–1000 m. We say so
-rather than average it away.
+**We also report where it does not work:** below 300 m the model is slightly
+*worse* than climatology. Daily surface fields carry almost no information about
+500–1000 m. An operational product should fall back to climatology there, and we
+say so rather than average it away.
 
 > **Say:** "Any model claiming skill at 1000 m from surface data alone should
 > make you suspicious."
+
+
+> **Say:** "One number moved the wrong way and it's worth explaining. Against
+> our first three-year run the margin over climatology was 13.7%; here it's
+> 11.9%. The reconstruction got *better* — every diagnostic improved on the same
+> test year. What changed is that six years of data make a much fairer
+> climatology baseline. Part of what the earlier model was credited for was
+> fixing a weak reference. We'd rather quote the number that survives scrutiny."
 
 ---
 
 ## Slide 6 — Why INCOIS should care: cyclone heat potential
 
-**Tropical Cyclone Heat Potential — reconstructed at 0.86 correlation.**
+**Tropical Cyclone Heat Potential — reconstructed at 0.90 correlation.**
 
 *Figure: `04_tchp.png`*
 
 | Diagnostic | RMSE | correlation |
 |---|---:|---:|
-| **TCHP** | 20.7 kJ cm⁻² | **0.858** |
-| D26 (26 °C isotherm depth) | 16.7 m | 0.759 |
-| Mixed layer depth | 17.3 m | 0.669 |
+| **TCHP** | 17.6 kJ cm⁻² | **0.897** |
+| D26 (26 °C isotherm depth) | 14.3 m | 0.830 |
+| Mixed layer depth | 15.3 m | 0.741 |
 
 TCHP is the operational predictor of **cyclone rapid intensification** in the Bay
 of Bengal. Two cyclones crossing water with *identical* sea surface temperature
@@ -165,12 +175,13 @@ profile — which is what this system reconstructs, daily and basin-wide.
 
 - End-to-end pipeline runs unattended: acquisition → harmonisation → training →
   scoring → standardized netCDF output.
-- 28.8 GB of real data processed; 3-year proof of concept complete.
+- 8 years of real data processed end to end, staged so that peak disk stays
+  under 10 GB; two full years held out for testing.
 - 16 automated correctness assertions covering regridding, land masking, depth
   interpolation and loss behaviour.
 
-**Cost is trivial.** A full 250-epoch training run is under 6 minutes on a
-quarter of one GPU. Scaling to the full 2010–2024 record
+**Cost is trivial.** A full 250-epoch run over eight years of data takes 36
+minutes on a quarter of one GPU. Scaling to the full 2010–2024 record
 is ~144 GB and one overnight download — the constraint is bandwidth, never
 compute. Inference for an operational daily product is seconds.
 

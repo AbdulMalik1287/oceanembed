@@ -14,12 +14,16 @@ Reconstruct daily depth-wise subsurface ocean temperature over the North Indian 
 | | |
 |---|---|
 | Pipeline | complete, 16 self-check assertions passing |
-| Data | 3 years (2019–2021) downloaded and built — 28.8 GB raw, 6 processed cubes |
-| Baselines + U-Net | **run.** U-Net mean RMSE **0.889 °C** vs **1.031 °C** climatology (+13.8%) |
-| Peak skill | **+21.3% at 100 m**, ACC 0.636 — the thermocline |
-| Diagnostics | TCHP corr **0.864**, D26 0.769, MLD 0.690 — none computable from SST alone |
+| Data | **8 years (2014–2021)** built and verified; staged so peak disk stays under 10 GB |
+| Split | train 2014–2019 · test **2020 and 2021**, both held out |
+| Baselines + U-Net | U-Net mean RMSE **0.783 °C** vs **0.889 °C** climatology (+11.9%) |
+| Peak skill | **+20.2% at 100 m**, ACC 0.608 — the thermocline |
+| Diagnostics | TCHP corr **0.897**, D26 0.830, MLD 0.741 — none computable from SST alone |
 | Output | `pred_2021.nc` standardized daily netCDF; 4 figures in `figs/` |
 | Open | ARGO validation, cyclone case study, ViT ablations |
+
+Full numbers and the honest comparison against the earlier 3-year run are in
+[`docs/RESULTS.md`](docs/RESULTS.md).
 
 ## Environment
 
@@ -91,10 +95,18 @@ cd ~/oceanembed
 ~/envs/ocean/bin/python -m scripts.pipeline build-target 2019
 ~/envs/ocean/bin/python -m scripts.pipeline build-inputs 2019
 
+# stage many years: fetch -> build -> verify -> delete raw, one year at a time
+~/envs/ocean/bin/python -m scripts.pipeline stage --years 2014 2015 2016 2017 2018
+
 # baselines then the model — identical scoring path for all three
-~/envs/ocean/bin/python -m scripts.train climatology --train 2019 2020 --test 2021
-~/envs/ocean/bin/python -m scripts.train linear      --train 2019 2020 --test 2021
-~/envs/ocean/bin/python -m scripts.train unet        --train 2019 2020 --test 2021 --epochs 40
+TR="2014 2015 2016 2017 2018 2019"; TE="2020 2021"
+~/envs/ocean/bin/python -m scripts.train climatology --train $TR --test $TE
+~/envs/ocean/bin/python -m scripts.train linear      --train $TR --test $TE
+~/envs/ocean/bin/python -m scripts.train unet        --train $TR --test $TE --epochs 250
+
+# standardized output + operational diagnostics, then figures
+~/envs/ocean/bin/python -m scripts.predict --train $TR --test 2021
+~/envs/ocean/bin/python -m scripts.figures
 ```
 
 `fetch` skips files that already exist, so it is safe to re-run after an interruption. It aborts if

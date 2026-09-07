@@ -80,7 +80,11 @@ def fig_skill_by_depth():
     a1.text(a1.get_xlim()[1] * 0.97, 110, "thermocline", ha="right", va="center",
             fontsize=9, color="#1f6feb", style="italic")
 
-    fig.suptitle("Subsurface temperature skill by depth — test year 2021, unseen",
+    # Title the actual test years rather than hardcoding one, so the figure can
+    # never quietly disagree with the run it was made from.
+    n_days = max(r["n"] for rs in rows.values() for r in rs) // (100 * 240) or 0
+    span = "2020–2021" if n_days > 500 else "2021"
+    fig.suptitle(f"Subsurface temperature skill by depth — test {span}, unseen",
                  fontweight="bold")
     fig.tight_layout()
     fig.savefig(FIGS / "01_skill_by_depth.png")
@@ -190,8 +194,14 @@ def fig_tchp(diag, land):
     ax.grid(alpha=0.25)
     ax.tick_params(axis="x", rotation=30)
 
+    # Compute the correlation here rather than hardcoding it, so the headline on
+    # the figure can never drift from the run that produced it.
+    pa = np.where(land, np.nan, diag["tchp_pred"].values).ravel()
+    ta = np.where(land, np.nan, diag["tchp_true"].values).ravel()
+    ok = np.isfinite(pa) & np.isfinite(ta)
+    r = float(np.corrcoef(pa[ok], ta[ok])[0, 1])
     fig.suptitle("Tropical Cyclone Heat Potential — reconstructed from surface data alone "
-                 "(corr 0.86)", fontweight="bold")
+                 f"(corr {r:.2f})", fontweight="bold")
     fig.savefig(FIGS / "04_tchp.png")
     plt.close(fig)
     print("  04_tchp.png")
