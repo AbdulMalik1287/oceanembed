@@ -228,8 +228,9 @@ depth-dependent bias correction, is the clear next step.
   scoring → standardized netCDF output.
 - 8 years of real data processed end to end, staged so that peak disk stays
   under 10 GB; two full years held out for testing.
-- 16 automated correctness assertions covering regridding, land masking, depth
-  interpolation and loss behaviour.
+- 15 automated correctness checks covering regridding, cross-product alignment,
+  land masking, depth interpolation and loss behaviour — plus a self-check on
+  the operational diagnostics against analytic profiles.
 
 **Cost is trivial.** A full 250-epoch run over eight years of data takes 36
 minutes on a quarter of one GPU. Scaling to the full 2010–2024 record

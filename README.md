@@ -3,6 +3,7 @@
 Reconstruct daily depth-wise subsurface ocean temperature over the North Indian Ocean
 (5–30°N, 45–105°E) at 0.25°, from surface satellite observations only.
 
+- **[`docs/RUNBOOK.md`](docs/RUNBOOK.md)** — how to run, check and explain this without help
 - **[`docs/RESULTS.md`](docs/RESULTS.md)** — measured skill, by depth, with the failure analysis
 - **[`docs/METHODOLOGY.md`](docs/METHODOLOGY.md)** — how it is implemented, stage by stage
 - [`docs/PS.md`](docs/PS.md) — problem statement and dataset table
@@ -13,15 +14,16 @@ Reconstruct daily depth-wise subsurface ocean temperature over the North Indian 
 
 | | |
 |---|---|
-| Pipeline | complete, 16 self-check assertions passing |
+| Pipeline | complete, 15 self-checks passing |
 | Data | **8 years (2014–2021)** built and verified; staged so peak disk stays under 10 GB |
 | Split | train 2014–2019 · test **2020 and 2021**, both held out |
 | Baselines + U-Net | U-Net mean RMSE **0.783 °C** vs **0.889 °C** climatology (+11.9%) |
 | Peak skill | **+20.2% at 100 m**, ACC 0.608 — the thermocline |
 | Diagnostics | TCHP corr **0.897**, D26 0.830, MLD 0.741 — none computable from SST alone |
 | Independent check | **8,015 Argo profiles**: 0.852 °C vs 0.900 climatology (+5.3%; +8–11% at 75–200 m) |
-| Output | `pred_2020.nc`, `pred_2021.nc` standardized daily netCDF; 5 figures in `figs/` |
-| Open | cyclone case study, thermocline bias correction, ViT ablations |
+| Coverage | Argo gives **11 profiles/day** in this basin; the model gives **11,759** |
+| Output | `pred_2020.nc`, `pred_2021.nc` standardized daily netCDF; 6 figures in `figs/` |
+| Open | cyclone case study, thermocline bias correction, uncertainty, NRT demo |
 
 Full numbers and the honest comparison against the earlier 3-year run are in
 [`docs/RESULTS.md`](docs/RESULTS.md).

@@ -167,7 +167,8 @@ near-identical, and a random split manufactures ~0.99 correlation from autocorre
 
 ## 9. Verification
 
-16 assertions across two self-check files, no network or data required:
+15 checks across two self-check files, plus a third covering the operational
+diagnostics. None need network or data:
 
 - Regrid correctness at every real product registration, including a half-cell-offset grid
 - Coordinates **bit-exact** against the target axes, not merely close — the failure mode requires
