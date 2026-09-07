@@ -207,6 +207,64 @@ def fig_tchp(diag, land):
     print("  04_tchp.png")
 
 
+def fig_argo():
+    """Validation against profiles nothing in this pipeline ever saw."""
+    m = PROC.parent / "argo" / "matched.npz"
+    if not m.exists():
+        print("  (no Argo matches yet, skipping 05)")
+        return
+    d = np.load(m, allow_pickle=True)
+    obs, model, glorys, clim = d["obs"], d["model"], d["glorys"], d["clim"]
+
+    rmse, bias, n = {}, {}, []
+    for name, arr in (("clim", clim), ("glorys", glorys), ("model", model)):
+        rmse[name], bias[name] = [], []
+    for k in range(len(STD_DEPTHS)):
+        ok = (np.isfinite(obs[:, k]) & np.isfinite(model[:, k])
+              & np.isfinite(glorys[:, k]) & np.isfinite(clim[:, k]))
+        n.append(ok.sum())
+        for name, arr in (("clim", clim), ("glorys", glorys), ("model", model)):
+            if ok.sum() < 20:
+                rmse[name].append(np.nan); bias[name].append(np.nan)
+            else:
+                rmse[name].append(np.sqrt(np.mean((arr[ok, k] - obs[ok, k]) ** 2)))
+                bias[name].append(np.mean(arr[ok, k] - obs[ok, k]))
+
+    style = {"clim": ("climatology", C["climatology"]),
+             "glorys": ("GLORYS (saw these profiles)", "#2ea043"),
+             "model": ("OceanEmbed", C["unet"])}
+
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(9.6, 5.4), sharey=True)
+    for key, (label, col) in style.items():
+        a1.plot(rmse[key], STD_DEPTHS, "o-", color=col, label=label, lw=2, ms=4)
+        a2.plot(bias[key], STD_DEPTHS, "o-", color=col, label=label, lw=2, ms=4)
+
+    a1.set_xlabel("RMSE vs Argo (°C)")
+    a1.set_ylabel("depth (m)")
+    a1.set_title("Error against independent profiles")
+    a1.invert_yaxis()
+    a1.set_yscale("symlog", linthresh=100)
+    a1.set_yticks([0, 25, 50, 100, 200, 500, 1000])
+    a1.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    a1.legend(frameon=False, fontsize=9)
+    a1.grid(alpha=0.25)
+
+    a2.axvline(0, color="k", lw=0.8)
+    a2.set_xlabel("bias vs Argo (°C)   — positive is too warm")
+    a2.set_title("Inherited warm bias at the thermocline")
+    a2.grid(alpha=0.25)
+
+    for ax in (a1, a2):
+        ax.axhspan(75, 150, color="#1f6feb", alpha=0.07, zorder=0)
+
+    fig.suptitle(f"Independent validation — {len(obs):,} Argo profiles, 2020–2021",
+                 fontweight="bold")
+    fig.tight_layout()
+    fig.savefig(FIGS / "05_argo_validation.png")
+    plt.close(fig)
+    print("  05_argo_validation.png")
+
+
 def main() -> None:
     FIGS.mkdir(parents=True, exist_ok=True)
 
@@ -230,6 +288,7 @@ def main() -> None:
     fig_acc_map(p, t, clim, land)
     fig_profiles(p, t, pred.time.values, land)
     fig_tchp(diag, land)
+    fig_argo()
     print(f"figures written to {FIGS}")
 
 

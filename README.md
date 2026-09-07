@@ -19,8 +19,9 @@ Reconstruct daily depth-wise subsurface ocean temperature over the North Indian 
 | Baselines + U-Net | U-Net mean RMSE **0.783 °C** vs **0.889 °C** climatology (+11.9%) |
 | Peak skill | **+20.2% at 100 m**, ACC 0.608 — the thermocline |
 | Diagnostics | TCHP corr **0.897**, D26 0.830, MLD 0.741 — none computable from SST alone |
-| Output | `pred_2021.nc` standardized daily netCDF; 4 figures in `figs/` |
-| Open | ARGO validation, cyclone case study, ViT ablations |
+| Independent check | **8,015 Argo profiles**: 0.852 °C vs 0.900 climatology (+5.3%; +8–11% at 75–200 m) |
+| Output | `pred_2020.nc`, `pred_2021.nc` standardized daily netCDF; 5 figures in `figs/` |
+| Open | cyclone case study, thermocline bias correction, ViT ablations |
 
 Full numbers and the honest comparison against the earlier 3-year run are in
 [`docs/RESULTS.md`](docs/RESULTS.md).
@@ -107,6 +108,11 @@ TR="2014 2015 2016 2017 2018 2019"; TE="2020 2021"
 # standardized output + operational diagnostics, then figures
 ~/envs/ocean/bin/python -m scripts.predict --train $TR --test 2021
 ~/envs/ocean/bin/python -m scripts.figures
+
+# independent validation against Argo profiles
+~/envs/ocean/bin/copernicusmarine get   --dataset-id cmems_obs-ins_glo_phy-temp-sal_my_easycora_irr   --filter "*global/202[01]/*_PR_PF.nc" --output-directory ~/ocean/argo_raw
+~/envs/ocean/bin/python -m scripts.argo collect --years 2020 2021
+~/envs/ocean/bin/python -m scripts.argo score
 ```
 
 `fetch` skips files that already exist, so it is safe to re-run after an interruption. It aborts if

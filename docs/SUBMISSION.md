@@ -169,7 +169,40 @@ profile — which is what this system reconstructs, daily and basin-wide.
 
 ---
 
-## Slide 7 — Feasibility and viability
+## Slide 7 — Independent validation
+
+**We checked against 8,015 Argo profiles the model has never seen.**
+
+*Figure: `05_argo_validation.png`*
+
+| | mean RMSE vs Argo |
+|---|---:|
+| Climatology | 0.900 °C |
+| **OceanEmbed** | **0.852 °C** — +5.3%, and +8–11% through 75–200 m |
+| GLORYS reanalysis | 0.615 °C |
+
+Two things this says, and we would rather say them than have you find them.
+
+**The margin is smaller than the reanalysis-based score suggests.** Against GLORYS we beat
+climatology by 11.9%; against real observations, 5.3%. The difference is the cost of training
+against a reanalysis — some of the apparent skill was agreement with GLORYS's errors, not the ocean.
+
+**GLORYS's column is not a fair competitor.** It assimilated these very profiles, so 0.615 is a fit
+statistic, not an independent score. It also needs in-situ data and is not available at real-time
+latency. Our model runs from satellite surface fields alone, in seconds.
+
+**And we can point at the largest remaining error.** GLORYS is +0.451 °C warm against Argo at 100 m;
+we inherit about three quarters of that. Fine-tuning against Argo directly, or fitting a
+depth-dependent bias correction, is the clear next step.
+
+> **Say:** "The obvious challenge to this project is that GLORYS already assimilates Argo, so
+> training on it is partly emulating a data-assimilation system. That's fair. So we went and
+> checked against the floats themselves. The margin drops from 11.9% to 5.3% — and we'd rather
+> quote the 5.3%, because it's the one that's true."
+
+---
+
+## Slide 8 — Feasibility and viability
 
 **Already demonstrated**
 
@@ -189,7 +222,7 @@ compute. Inference for an operational daily product is seconds.
 
 | Risk | Mitigation |
 |---|---|
-| GLORYS assimilates Argo, so training on it partly emulates a DA system | Validate against **raw Argo profiles**, not just gridded products; state the limitation openly |
+| GLORYS assimilates Argo, so training on it partly emulates a DA system | **Done** — validated against 8,015 raw Argo profiles; margin quoted from that, not from GLORYS |
 | Satellite salinity before 2010 is a reconstruction, not a retrieval | Restrict the operational record to 2007+, where all inputs are genuine retrievals |
 | Coastal cells lost to regridding | Masked conservative regridding if coastal skill proves to matter |
 | Short climatology biases the reference | Swap in the CMEMS long-term monthly climatology |
@@ -199,7 +232,7 @@ compute. Inference for an operational daily product is seconds.
 
 ---
 
-## Slide 8 — Impact and benefits
+## Slide 9 — Impact and benefits
 
 **Direct users:** INCOIS ocean forecasting and hazard-warning services, IMD
 cyclone forecasting, Indian Navy, marine fisheries advisories.
@@ -215,7 +248,7 @@ cyclone forecasting, Indian Navy, marine fisheries advisories.
 
 ---
 
-## Slide 9 — Research and references
+## Slide 10 — Research and references
 
 - Problem statement SIH26066, INCOIS / Ministry of Earth Sciences
 - GLORYS12V1 Global Ocean Physics Reanalysis — https://doi.org/10.48670/moi-00021
@@ -235,12 +268,12 @@ cyclone forecasting, Indian Navy, marine fisheries advisories.
 ## Anticipated questions
 
 **"Isn't this circular — GLORYS already assimilates Argo?"**
-Partly, and we say so. Training against a reanalysis means learning to emulate a
-data-assimilation system, which is why gridded-Argo validation is only
-semi-independent. The honest test is raw Argo profiles on held-out years. It is
-the next thing we build. Note also that the operational value stands regardless:
-GLORYS is not available in real time at this latency, and our model runs from
-surface fields alone in seconds.
+Partly, and we measured exactly how much. Against 8,015 independent Argo
+profiles the margin over climatology falls from 11.9% to 5.3%, and we inherit
+about three quarters of GLORYS's +0.451 °C warm bias at 100 m. We quote the
+5.3%. The operational value stands regardless: GLORYS needs in-situ input and is
+not available at real-time latency, while this model runs from surface fields
+alone in seconds.
 
 **"Why not just use Argo directly?"**
 Coverage. One profile per 3°×3° per 10 days cannot produce a daily basin-wide

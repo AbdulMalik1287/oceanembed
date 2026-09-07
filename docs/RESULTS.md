@@ -83,8 +83,13 @@ climatology below 300 m.
 | 200 | −0.267 | −0.136 | **−0.105** |
 
 The climatology is still −0.596 °C cold at 100 m; the U-Net removes **73%** of that, up from 35% in
-the 3-year run. This is the clearest evidence that the network is learning real structure rather
-than reproducing the reference.
+the 3-year run.
+
+**Read this together with the Argo section below, or it misleads.** These biases are measured
+against *GLORYS*. Against real Argo profiles the sign flips: the model is +0.603 °C too **warm** at
+100 m, because GLORYS is itself +0.451 °C warm there and the model inherits it. So the network does
+track GLORYS closely — that is what this table shows — but tracking GLORYS closely includes tracking
+its errors.
 
 ### 4. Honest comparison with the 3-year run
 
@@ -116,6 +121,75 @@ Train loss 0.069 against validation 0.233 — a 3.4× gap (was 4.2× on three ye
 flat from about epoch 130. More capacity would widen that gap, not close it. If more skill is
 wanted, the lever is still more data or better inputs, not a bigger network.
 
+## Independent validation against Argo profiles
+
+**8,015 quality-controlled in-situ profiles** in the region during 2020–2021, from the Copernicus
+EasyCORA delayed-mode product (profiling floats only). Nothing in this pipeline has ever seen them.
+Pressure converted to depth with the UNESCO 1983 formula — treating dbar as metres would be ~1% off,
+which is 1 m at 100 m and, in a thermocline running 0.05 °C per metre, a systematic error smeared
+across exactly the depths this project claims skill at.
+
+| depth (m) | n | clim RMSE | GLORYS RMSE | **ours RMSE** | ours bias | ours corr | vs clim |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 5 | 7053 | 0.643 | 0.373 | **0.581** | −0.027 | 0.936 | +9.6% |
+| 20 | 7690 | 0.797 | 0.555 | 0.802 | +0.064 | 0.869 | −0.7% |
+| 50 | 7927 | 1.181 | 0.853 | **1.116** | +0.200 | 0.859 | +5.5% |
+| 75 | 7960 | 1.503 | 0.993 | **1.379** | +0.445 | 0.834 | +8.3% |
+| **100** | 7958 | 1.689 | 1.073 | **1.553** | +0.603 | 0.788 | +8.1% |
+| 125 | 7964 | 1.623 | 1.030 | **1.461** | +0.508 | 0.778 | +10.0% |
+| 150 | 7939 | 1.412 | 0.909 | **1.252** | +0.319 | 0.809 | +11.4% |
+| 200 | 7881 | 0.989 | 0.681 | **0.921** | +0.129 | 0.896 | +6.9% |
+| 300 | 7817 | 0.602 | 0.495 | 0.633 | +0.077 | 0.933 | −5.2% |
+| 500 | 7703 | 0.408 | 0.329 | 0.421 | −0.029 | 0.953 | −3.3% |
+| 1000 | 6774 | 0.281 | 0.290 | 0.308 | −0.058 | 0.960 | −9.7% |
+| **mean** | | **0.900** | **0.615** | **0.852** | | | **+5.3%** |
+
+### This is the number that counts, and it is smaller
+
+Against GLORYS the model beats climatology by 11.9%. Against **real observations** the margin is
+**5.3%** — and 8–11% through the 75–200 m band where it works. The gap between those two figures is
+the honest cost of training against a reanalysis: some of the apparent skill is agreement with
+GLORYS's own errors, not with the ocean.
+
+Report the 5.3% and the band-specific 8–11%. They are what an independent check produces.
+
+### GLORYS's column is not a fair competitor
+
+GLORYS reaches 0.615 °C, 28% better than the reconstruction. But **GLORYS assimilated these very
+profiles** — its column is a fit statistic, not an independent skill score, and it is a best case
+rather than a rival. It also is not available at real-time latency and requires in-situ input,
+whereas this model runs from satellite surface fields alone in seconds.
+
+The honest framing: *this is the cost of using surface data only, and it is the price of not needing
+floats in the water on the day you need an answer.*
+
+### The warm bias is inherited, and that is measurable
+
+| depth (m) | clim bias | GLORYS bias | ours bias |
+|---:|---:|---:|---:|
+| 75 | +0.120 | +0.326 | +0.445 |
+| **100** | **+0.213** | **+0.451** | **+0.603** |
+| 125 | +0.145 | +0.422 | +0.508 |
+| 150 | +0.030 | +0.288 | +0.319 |
+
+**GLORYS is itself warm-biased against Argo at the thermocline** (+0.451 °C at 100 m), and the
+reconstruction inherits roughly three quarters of that before adding a little of its own. This is
+the circularity critique made concrete: train against a reanalysis and you acquire its biases along
+with its structure.
+
+It also points at the fix — fine-tune against Argo profiles directly, or add a bias-correction term
+estimated from in-situ data. Neither is difficult; both are beyond the current deadline.
+
+### Where it genuinely fails
+
+Below 300 m the model is worse than climatology against real observations (−9.7% at 1000 m), which
+matches what the GLORYS-based scoring already said. An operational product should serve climatology
+below 300 m and the reconstruction above it.
+
+Note also that correlation stays high throughout (0.78–0.96) even where RMSE is unflattering: the
+model tracks the *variability* well and is offset, which is consistent with a bias problem rather
+than a skill problem.
+
 ## Figures
 
 | File | Shows |
@@ -124,12 +198,13 @@ wanted, the lever is still more data or better inputs, not a bigger network.
 | `figs/02_acc_map_100m.png` | where the model has skill, at 100 m |
 | `figs/03_profiles.png` | reconstructed vs GLORYS profiles, Arabian Sea and Bay of Bengal, four dates |
 | `figs/04_tchp.png` | TCHP maps, agreement scatter, and the 2021 seasonal cycle |
+| `figs/05_argo_validation.png` | RMSE and bias against 8,015 independent Argo profiles |
 
 ## Next steps
 
-1. **Independent ARGO validation** — the one remaining problem-statement deliverable, and the
-   answer to the sharpest objection (GLORYS assimilates Argo, so training against it is partly
-   emulating a data-assimilation system).
+1. **Correct the inherited thermocline bias** — fine-tune against Argo profiles, or fit a
+   depth-dependent bias correction from in-situ data. This is now the single largest error term:
+   at 100 m the bias is +0.603 °C against an RMSE of 1.553 °C.
 2. **Fall back to climatology below 300 m** in the delivered product, and say why.
 3. **More years** — 2010–2024 is available; the record is bounded by wind (2007) and SSS (2024).
 
@@ -141,5 +216,5 @@ wanted, the lever is still more data or better inputs, not a bigger network.
 | 2 | Satellite embedding engine | done — the U-Net bottleneck, readable directly |
 | 3 | DL reconstruction model | done |
 | 4 | Standardized daily 0.25° output | done — `scripts/predict.py` writes `pred_YYYY.nc` |
-| 5 | Validation against independent ARGO | **open** |
+| 5 | Validation against independent ARGO | done — 8,015 profiles, see above |
 | 6 | Bay of Bengal / Arabian Sea PoC | figures done; a named-cyclone case study would finish it |
