@@ -42,6 +42,24 @@ PS SIH26066 · Ministry of Earth Sciences · INCOIS · Software · Team <name>
 
 ---
 
+## Slide 2b — The gap, in one picture
+
+*Figure: `06_coverage_gap.png`*
+
+| | profiles per day, North Indian Ocean |
+|---|---:|
+| Argo floats | **11** |
+| **OceanEmbed** | **11,759** — every wet cell, every day |
+
+The **Bay of Bengal averages 3.3 profiles a day**, and on **8% of days has none at all** — including
+the day shown. That is the basin behind a disproportionate share of the world's deadliest cyclones.
+
+> **Say:** "On 29 August 2021 there was not a single Argo profile in the Bay of Bengal. If a
+> cyclone had been intensifying that day, nobody could have told you what the water under it looked
+> like. That is the gap we fill."
+
+---
+
 ## Slide 3 — Proposed solution
 
 **Learn the mapping from the surface pattern to the vertical profile.**

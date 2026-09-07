@@ -265,6 +265,65 @@ def fig_argo():
     print("  05_argo_validation.png")
 
 
+def fig_coverage(pred, land):
+    """The argument for the whole project, in one image.
+
+    Argo is the only thing that measures subsurface temperature directly, and in
+    this basin it delivers roughly a dozen profiles on a given day. The
+    reconstruction delivers one for every wet cell.
+    """
+    m = PROC.parent / "argo" / "matched.npz"
+    if not m.exists():
+        print("  (no Argo matches yet, skipping 06)")
+        return
+    d = np.load(m, allow_pickle=True)
+    times = np.array([str(t)[:10] for t in d["time"]])
+    day = "2021-08-29"
+    sel = times == day
+    n_wet = int((~land).sum())
+    per_day = len(times) / len(np.unique(times))
+
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4.3))
+
+    im0 = a1.imshow(np.where(land, np.nan, np.zeros_like(land, dtype=float)),
+                    origin="lower", extent=EXTENT, cmap="Greys", vmin=0, vmax=1)
+    _coast(a1, land)
+    a1.scatter(d["lon"][sel], d["lat"][sel], s=46, c="#d1242f",
+               edgecolor="white", linewidth=0.8, zorder=5)
+    _mapfmt(a1, f"What Argo measured — {day}")
+    # Annotation inside the axes: below it, tight_layout does not reserve space
+    # and it lands on top of the x-axis label.
+    a1.text(0.985, 0.94, f"{int(sel.sum())} profiles\n{per_day:.0f}/day average",
+            transform=a1.transAxes, ha="right", va="top", fontsize=11,
+            color="#d1242f", fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="#d1242f", alpha=0.9))
+    # An invisible colorbar keeps this panel the same size as the one on the
+    # right, which has a real one.
+    cb0 = fig.colorbar(im0, ax=a1, shrink=0.85)
+    cb0.ax.set_visible(False)
+
+    zi = int(np.argmin(np.abs(STD_DEPTHS - 100)))
+    dates = pred["time"].dt.strftime("%Y-%m-%d").values
+    di = int(np.flatnonzero(dates == day)[0])
+    field = np.where(land, np.nan, pred.isel(time=di, depth=zi).values)
+    im = a2.imshow(field, origin="lower", extent=EXTENT, cmap="RdYlBu_r",
+                   interpolation="nearest")
+    _coast(a2, land)
+    _mapfmt(a2, f"What OceanEmbed reconstructed — {day}")
+    fig.colorbar(im, ax=a2, shrink=0.85, label="temperature at 100 m (°C)")
+    a2.text(0.985, 0.94, f"{n_wet:,} profiles\nevery wet cell, every day",
+            transform=a2.transAxes, ha="right", va="top", fontsize=11,
+            color=C["unet"], fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=C["unet"], alpha=0.9))
+
+    fig.suptitle(f"Filling the gap — {n_wet / per_day:,.0f}x more profiles per day, "
+                 "from satellites alone", fontweight="bold")
+    fig.tight_layout()
+    fig.savefig(FIGS / "06_coverage_gap.png")
+    plt.close(fig)
+    print(f"  06_coverage_gap.png  ({per_day:.0f} Argo/day vs {n_wet:,} cells)")
+
+
 def main() -> None:
     FIGS.mkdir(parents=True, exist_ok=True)
 
@@ -289,6 +348,7 @@ def main() -> None:
     fig_profiles(p, t, pred.time.values, land)
     fig_tchp(diag, land)
     fig_argo()
+    fig_coverage(pred, land)
     print(f"figures written to {FIGS}")
 
 

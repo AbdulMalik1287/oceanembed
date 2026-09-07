@@ -199,6 +199,21 @@ than a skill problem.
 | `figs/03_profiles.png` | reconstructed vs GLORYS profiles, Arabian Sea and Bay of Bengal, four dates |
 | `figs/04_tchp.png` | TCHP maps, agreement scatter, and the 2021 seasonal cycle |
 | `figs/05_argo_validation.png` | RMSE and bias against 8,015 independent Argo profiles |
+| `figs/06_coverage_gap.png` | what Argo measured that day vs what the model reconstructed |
+
+## The coverage gap this fills
+
+Argo is the only instrument that measures subsurface temperature directly, and in this basin it
+returns about **11 profiles a day**. The model returns one for **every wet cell — 11,759 a day**, a
+factor of ~1,070.
+
+The distribution matters more than the ratio. The **Bay of Bengal averages 3.3 profiles a day**, and
+on **8% of days it has none at all** — including 29 August 2021, the day in the figure. That is the
+basin responsible for a disproportionate share of the world's deadliest tropical cyclones, and on
+one day in twelve there is no subsurface observation anywhere in it.
+
+That is the gap, and it is why a reconstruction from satellite surface fields is worth having even
+at 0.852 °C accuracy.
 
 ## Next steps
 
