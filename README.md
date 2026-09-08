@@ -3,6 +3,7 @@
 Reconstruct daily depth-wise subsurface ocean temperature over the North Indian Ocean
 (5–30°N, 45–105°E) at 0.25°, from surface satellite observations only.
 
+- **[`docs/PPT_HANDOFF.md`](docs/PPT_HANDOFF.md)** — asset pack, architecture diagrams and slide copy for whoever builds the deck
 - **[`docs/RUNBOOK.md`](docs/RUNBOOK.md)** — how to run, check and explain this without help
 - **[`docs/RESULTS.md`](docs/RESULTS.md)** — measured skill, by depth, with the failure analysis
 - **[`docs/METHODOLOGY.md`](docs/METHODOLOGY.md)** — how it is implemented, stage by stage
