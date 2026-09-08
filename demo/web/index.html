@@ -1,0 +1,558 @@
+<title>OceanEmbed Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  --ground:      #EEF4F9;
+  --ground-2:    #E3EDF5;
+  --card:        #FFFFFF;
+  --ink:         #0B1F33;
+  --ink-2:       #46617A;
+  --ink-3:       #8AA2B6;
+  --line:        #DCE7F0;
+  --accent:      #E8743B;
+  --accent-soft: #FBEAE0;
+  --cool:        #2E7BA6;
+  --ok:          #1F8A70;
+  --ok-soft:     #DFF0EA;
+  --warn:        #C4622D;
+  --warn-soft:   #FAE9DC;
+  --crit:        #B3402C;
+  --crit-soft:   #F8E0DB;
+  --shadow:      0 1px 2px rgba(11,31,51,.05), 0 8px 24px -14px rgba(11,31,51,.20);
+  --shadow-lift: 0 2px 6px rgba(11,31,51,.07), 0 18px 44px -20px rgba(11,31,51,.30);
+  --r: 18px;
+  --sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #071320;
+    --ground-2:    #0B1E2D;
+    --card:        #0F2537;
+    --ink:         #E7F0F7;
+    --ink-2:       #9CB5C8;
+    --ink-3:       #64809A;
+    --line:        #1B3448;
+    --accent-soft: #3A2318;
+    --ok-soft:     #0F2E27;
+    --warn-soft:   #33210F;
+    --crit-soft:   #331A15;
+    --shadow:      0 1px 2px rgba(0,0,0,.30), 0 8px 24px -14px rgba(0,0,0,.60);
+    --shadow-lift: 0 2px 6px rgba(0,0,0,.35), 0 18px 44px -20px rgba(0,0,0,.70);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #071320;
+  --ground-2:    #0B1E2D;
+  --card:        #0F2537;
+  --ink:         #E7F0F7;
+  --ink-2:       #9CB5C8;
+  --ink-3:       #64809A;
+  --line:        #1B3448;
+  --accent-soft: #3A2318;
+  --ok-soft:     #0F2E27;
+  --warn-soft:   #33210F;
+  --crit-soft:   #331A15;
+  --shadow:      0 1px 2px rgba(0,0,0,.30), 0 8px 24px -14px rgba(0,0,0,.60);
+  --shadow-lift: 0 2px 6px rgba(0,0,0,.35), 0 18px 44px -20px rgba(0,0,0,.70);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: linear-gradient(168deg, var(--ground-2) 0%, var(--ground) 42%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 28px 22px 44px; }
+
+/* ---------- header ---------- */
+.top { display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
+.top-left { flex: 1 1 320px; min-width: 0; }
+.eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--ink-3); margin: 0 0 6px;
+}
+h1 { font-size: 30px; font-weight: 700; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+.sub { margin: 5px 0 0; color: var(--ink-2); font-size: 14px; }
+.sub b { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+
+.risk {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 9px 15px 9px 12px; border-radius: 999px;
+  background: var(--card); box-shadow: var(--shadow); border: 1px solid var(--line);
+}
+.risk .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); }
+.risk .lbl { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.risk .val { font-family: var(--mono); font-weight: 600; font-size: 14px; }
+
+/* ---------- layout ---------- */
+.grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(0,1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--r); box-shadow: var(--shadow); padding: 18px;
+}
+.card h2 {
+  font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-3); margin: 0 0 14px;
+}
+.stack { display: flex; flex-direction: column; gap: 16px; }
+
+/* ---------- map ---------- */
+.mapcard { padding: 18px 18px 14px; }
+.maphead { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.segs { display: inline-flex; background: var(--ground); border-radius: 11px; padding: 3px; gap: 2px; border: 1px solid var(--line); }
+.seg {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  font: 600 12px/1 var(--sans); color: var(--ink-2);
+  padding: 8px 13px; border-radius: 8px; transition: background .15s, color .15s;
+}
+.seg[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+.seg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.canvas-wrap { position: relative; border-radius: 13px; overflow: hidden; background: var(--ground); border: 1px solid var(--line); }
+canvas#map { display: block; width: 100%; height: auto; cursor: crosshair; }
+.pin {
+  position: absolute; width: 15px; height: 15px; margin: -8px 0 0 -8px;
+  border-radius: 50%; border: 2.5px solid #fff; background: var(--accent);
+  box-shadow: 0 0 0 1.5px rgba(11,31,51,.35); pointer-events: none;
+}
+
+.scalebar { display: flex; align-items: center; gap: 10px; margin-top: 11px; }
+.ramp { flex: 1; height: 8px; border-radius: 4px; }
+.scalebar span { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+
+.depthrow { display: flex; align-items: center; gap: 11px; margin-top: 13px; }
+.depthrow label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+input[type="range"] { flex: 1; accent-color: var(--accent); }
+.depthval { font-family: var(--mono); font-size: 13px; font-weight: 600; min-width: 62px; text-align: right; }
+
+.dates { display: flex; gap: 6px; margin-top: 14px; overflow-x: auto; padding-bottom: 3px; }
+.date {
+  appearance: none; border: 1px solid var(--line); background: var(--card); cursor: pointer;
+  font: 500 12px/1 var(--mono); color: var(--ink-2);
+  padding: 8px 11px; border-radius: 9px; white-space: nowrap; transition: all .15s;
+}
+.date[aria-pressed="true"] { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.date:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- metric tiles ---------- */
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tile {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.tile .name { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.tile .big { font-family: var(--mono); font-size: 25px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; }
+.tile .unit { font-size: 12px; color: var(--ink-3); font-family: var(--mono); }
+.chip {
+  align-self: flex-start; margin-top: 5px; font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 999px; letter-spacing: .02em;
+}
+.chip.ok   { background: var(--ok-soft);   color: var(--ok); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.crit { background: var(--crit-soft); color: var(--crit); }
+
+/* ---------- profile ---------- */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+.legend i { display: inline-block; width: 15px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.legend span { font-size: 12px; color: var(--ink-2); }
+svg { display: block; width: 100%; height: auto; }
+.axis { stroke: var(--line); stroke-width: 1; }
+.tick { font: 400 10px var(--mono); fill: var(--ink-3); }
+.axlabel { font: 600 10px var(--sans); fill: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+
+/* ---------- validation ---------- */
+table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+th { text-align: right; font: 600 10px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); padding: 0 0 7px; }
+th:first-child, td:first-child { text-align: left; }
+td { text-align: right; padding: 5px 0; border-top: 1px solid var(--line); }
+td.best { color: var(--accent); font-weight: 600; }
+
+.note { font-size: 12px; color: var(--ink-2); line-height: 1.55; margin: 12px 0 0; }
+.note b { color: var(--ink); }
+
+footer { margin-top: 26px; font-size: 12px; color: var(--ink-3); display: flex; gap: 16px; flex-wrap: wrap; }
+footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="top-left">
+      <p class="eyebrow">INCOIS · SIH26066 · North Indian Ocean</p>
+      <h1>OceanEmbed Console</h1>
+      <p class="sub">Subsurface temperature reconstructed from surface satellites only —
+        <b id="hdr-date">—</b> at <b id="hdr-pos">—</b></p>
+    </div>
+    <div class="risk">
+      <span class="dot" id="risk-dot"></span>
+      <span>
+        <span class="lbl">Cyclone potential</span><br>
+        <span class="val" id="risk-val">—</span>
+      </span>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <section class="card mapcard">
+      <div class="maphead">
+        <h2 style="margin:0">Basin view</h2>
+        <div class="segs" role="group" aria-label="Map layer">
+          <button class="seg" data-layer="t"    aria-pressed="true">Temperature</button>
+          <button class="seg" data-layer="tchp" aria-pressed="false">Heat potential</button>
+          <button class="seg" data-layer="d26"  aria-pressed="false">26 °C depth</button>
+          <button class="seg" data-layer="mld"  aria-pressed="false">Mixed layer</button>
+        </div>
+      </div>
+
+      <div class="canvas-wrap" id="canvas-wrap">
+        <canvas id="map" width="240" height="100" aria-label="Reconstructed field over the North Indian Ocean"></canvas>
+        <div class="pin" id="pin" hidden></div>
+      </div>
+
+      <div class="scalebar">
+        <span id="scale-lo">—</span>
+        <div class="ramp" id="ramp"></div>
+        <span id="scale-hi">—</span>
+      </div>
+
+      <div class="depthrow" id="depthrow">
+        <label for="depth">Depth</label>
+        <input type="range" id="depth" min="0" max="14" value="7" step="1">
+        <span class="depthval" id="depthval">100 m</span>
+      </div>
+
+      <div class="dates" id="dates" role="group" aria-label="Date"></div>
+    </section>
+
+    <div class="stack">
+
+      <div class="tiles">
+        <div class="tile">
+          <span class="name">Heat potential</span>
+          <span class="big" id="v-tchp">—</span>
+          <span class="unit">kJ cm⁻²</span>
+          <span class="chip ok" id="c-tchp">—</span>
+        </div>
+        <div class="tile">
+          <span class="name">26 °C isotherm</span>
+          <span class="big" id="v-d26">—</span>
+          <span class="unit">metres deep</span>
+          <span class="chip ok" id="c-d26">—</span>
+        </div>
+        <div class="tile">
+          <span class="name">Mixed layer</span>
+          <span class="big" id="v-mld">—</span>
+          <span class="unit">metres deep</span>
+        </div>
+        <div class="tile">
+          <span class="name">At <span id="v-depth-lbl">100 m</span></span>
+          <span class="big" id="v-temp">—</span>
+          <span class="unit">°C reconstructed</span>
+        </div>
+      </div>
+
+      <section class="card">
+        <h2>Vertical profile at this point</h2>
+        <div class="legend">
+          <span><i style="background:var(--accent)"></i>OceanEmbed</span>
+          <span><i style="background:var(--cool)"></i>GLORYS reanalysis</span>
+          <span><i style="background:var(--ink-3)"></i>Climatology</span>
+        </div>
+        <svg id="profile" viewBox="0 0 340 260" role="img" aria-label="Temperature against depth"></svg>
+        <p class="note" id="profile-note">Click anywhere on the basin to place a probe.</p>
+      </section>
+
+      <section class="card">
+        <h2>Validated against 8,015 Argo floats</h2>
+        <table id="argo-table">
+          <thead><tr><th>Depth</th><th>Climatology</th><th>OceanEmbed</th><th>Gain</th></tr></thead>
+          <tbody id="argo-body"></tbody>
+        </table>
+        <p class="note"><b>These profiles were never seen in training.</b> GLORYS assimilates them,
+          so it is a best case rather than a rival. Argo returns ~11 profiles a day across this
+          basin; the model returns 11,759.</p>
+      </section>
+
+    </div>
+  </div>
+
+  <footer>
+    <span>Trained <b>2014–2019</b></span>
+    <span>Tested <b>2020–2021</b>, held out</span>
+    <span>U-Net <b>1.93 M</b> params</span>
+    <span>Grid <b>0.25° · 15 depths</b></span>
+    <span id="foot-src">Data <b>baked offline</b></span>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.OCEAN_DATA;
+  if (!D) { document.querySelector(".wrap").innerHTML =
+    "<p style='font:600 15px sans-serif'>data.js did not load. Keep index.html and data.js in the same folder.</p>"; return; }
+
+  var M = D.meta, NY = M.ny, NX = M.nx, NYC = M.nyc, NXC = M.nxc, CO = M.coarse;
+  var DEPTHS = M.depths;
+
+  // ---- decoding -----------------------------------------------------------
+  function bytes(b64) {
+    var s = atob(b64), a = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i);
+    return a;
+  }
+  var cache = {};
+  function field(f) {                       // {lo,hi,d} -> {u:Uint8Array,lo,hi}
+    if (!f) return null;
+    if (!cache[f.d]) cache[f.d] = bytes(f.d);
+    return { u: cache[f.d], lo: f.lo, hi: f.hi };
+  }
+  function valueAt(f, i, j, nx) {           // 0 means no data
+    var g = field(f); if (!g) return NaN;
+    var v = g.u[i * nx + j];
+    return v === 0 ? NaN : g.lo + (v - 1) / 254 * (g.hi - g.lo);
+  }
+  var LAND = bytes(D.land);
+
+  // ---- colour -------------------------------------------------------------
+  // Ramps written as stops and interpolated, so the legend and the pixels can
+  // never disagree — both read this table.
+  var RAMPS = {
+    t:    [[8,48,107],[33,113,181],[107,174,214],[247,239,190],[253,174,97],[227,110,60],[165,30,30]],
+    tchp: [[10,20,45],[52,32,110],[136,42,110],[212,72,66],[246,148,52],[252,229,140]],
+    d26:  [[240,247,252],[158,202,225],[66,146,198],[24,86,153],[9,38,88]],
+    mld:  [[247,243,236],[214,196,166],[173,145,110],[122,94,66],[64,46,30]]
+  };
+  function ramp(name, x) {
+    var s = RAMPS[name], n = s.length - 1;
+    x = x < 0 ? 0 : x > 1 ? 1 : x;
+    var p = x * n, k = Math.min(Math.floor(p), n - 1), f = p - k;
+    var a = s[k], b = s[k + 1];
+    return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+  }
+  function cssRamp(name) {
+    var out = [];
+    for (var i = 0; i <= 8; i++) { var c = ramp(name, i / 8); out.push("rgb(" + (c[0]|0) + "," + (c[1]|0) + "," + (c[2]|0) + ")"); }
+    return "linear-gradient(90deg," + out.join(",") + ")";
+  }
+
+  // ---- state --------------------------------------------------------------
+  // Opens on 29 August 2021 in the central Arabian Sea: peak cyclone season,
+  // and the day Argo returned no profiles at all in the Bay of Bengal.
+  var OPEN_ON = "2021-08-29";
+  var state = {
+    date: M.dates.indexOf(OPEN_ON) >= 0 ? OPEN_ON : M.dates[M.dates.length - 1],
+    layer: "t", depth: 7, i: 52, j: 96
+  };
+  var cv = document.getElementById("map"), cx = cv.getContext("2d");
+  var img = cx.createImageData(NX, NY);
+
+  function currentField() {
+    var fr = D.frames[state.date];
+    return state.layer === "t" ? fr.t[state.depth] : fr[state.layer];
+  }
+
+  function land(i, j) { return LAND[i * NX + j] === 1; }
+
+  // Canvas cannot read CSS variables, so resolve the land colour from a probe
+  // element. Hardcoding it would leave land glowing pale on a dark ground.
+  var probe = document.createElement("div");
+  probe.style.cssText = "position:absolute;visibility:hidden;background:var(--line)";
+  document.body.appendChild(probe);
+  function landRGB() {
+    var m = /(\d+)[,\s]+(\d+)[,\s]+(\d+)/.exec(getComputedStyle(probe).backgroundColor);
+    return m ? [+m[1], +m[2], +m[3]] : [214, 223, 231];
+  }
+
+  function drawMap() {
+    var f = field(currentField()), px = img.data, lc = landRGB();
+    for (var i = 0; i < NY; i++) {
+      for (var j = 0; j < NX; j++) {
+        // Canvas y grows downward, the grid's latitude grows upward.
+        var src = (NY - 1 - i) * NX + j, dst = (i * NX + j) * 4;
+        var v = f.u[src];
+        if (v === 0) {                                   // land or no data
+          px[dst] = lc[0]; px[dst + 1] = lc[1]; px[dst + 2] = lc[2]; px[dst + 3] = 255;
+        } else {
+          var c = ramp(state.layer, (v - 1) / 254);
+          px[dst] = c[0]; px[dst + 1] = c[1]; px[dst + 2] = c[2]; px[dst + 3] = 255;
+        }
+      }
+    }
+    cx.putImageData(img, 0, 0);
+    var unit = state.layer === "t" ? " °C" : state.layer === "tchp" ? " kJ" : " m";
+    document.getElementById("scale-lo").textContent = f.lo.toFixed(state.layer === "t" ? 1 : 0) + unit;
+    document.getElementById("scale-hi").textContent = f.hi.toFixed(state.layer === "t" ? 1 : 0) + unit;
+    document.getElementById("ramp").style.background = cssRamp(state.layer);
+  }
+
+  // ---- readouts -----------------------------------------------------------
+  function chip(el, cls, text) { el.className = "chip " + cls; el.textContent = text; }
+
+  function updateReadouts() {
+    var fr = D.frames[state.date], i = state.i, j = state.j;
+    var lat = M.lat[0] + i * 0.25, lon = M.lon[0] + j * 0.25;
+    document.getElementById("hdr-date").textContent = state.date;
+    document.getElementById("hdr-pos").textContent =
+      lat.toFixed(2) + "°N, " + lon.toFixed(2) + "°E";
+
+    var tchp = valueAt(fr.tchp, i, j, NX);
+    var d26  = valueAt(fr.d26,  i, j, NX);
+    var mld  = valueAt(fr.mld,  i, j, NX);
+    var temp = valueAt(fr.t[state.depth], i, j, NX);
+
+    document.getElementById("v-tchp").textContent = isFinite(tchp) ? tchp.toFixed(0) : "—";
+    document.getElementById("v-d26").textContent  = isFinite(d26)  ? d26.toFixed(0)  : "—";
+    document.getElementById("v-mld").textContent  = isFinite(mld)  ? mld.toFixed(0)  : "—";
+    document.getElementById("v-temp").textContent = isFinite(temp) ? temp.toFixed(1) : "—";
+    document.getElementById("v-depth-lbl").textContent = DEPTHS[state.depth] + " m";
+
+    // 60 kJ/cm2 is the operational threshold below which a cyclone tends not to
+    // intensify; 90 is where rapid intensification becomes likely.
+    var ct = document.getElementById("c-tchp"), dot = document.getElementById("risk-dot"),
+        rv = document.getElementById("risk-val");
+    if (!isFinite(tchp)) { chip(ct, "ok", "no data"); rv.textContent = "—"; dot.style.background = "var(--ink-3)"; }
+    else if (tchp >= 90) { chip(ct, "crit", "supports rapid intensification"); rv.textContent = "HIGH"; dot.style.background = "var(--crit)"; }
+    else if (tchp >= 60) { chip(ct, "warn", "sufficient for intensification"); rv.textContent = "ELEVATED"; dot.style.background = "var(--warn)"; }
+    else                 { chip(ct, "ok", "below intensification threshold"); rv.textContent = "LOW"; dot.style.background = "var(--ok)"; }
+
+    var cd = document.getElementById("c-d26");
+    if (!isFinite(d26))      chip(cd, "ok", "no data");
+    else if (d26 >= 100)     chip(cd, "crit", "deep warm layer");
+    else if (d26 >= 50)      chip(cd, "warn", "moderate");
+    else                     chip(cd, "ok", "shallow");
+
+    var pin = document.getElementById("pin");
+    pin.hidden = false;
+    pin.style.left = ((j + 0.5) / NX * 100) + "%";
+    pin.style.top = ((NY - 1 - i + 0.5) / NY * 100) + "%";
+    drawProfile();
+  }
+
+  // ---- profile ------------------------------------------------------------
+  function drawProfile() {
+    var fr = D.frames[state.date], i = state.i, j = state.j;
+    var ic = Math.min(Math.floor(i / CO), NYC - 1), jc = Math.min(Math.floor(j / CO), NXC - 1);
+    var series = [
+      { key: "model",  color: "var(--accent)", w: 2.4, v: DEPTHS.map(function (_, k) { return valueAt(fr.t[k], i, j, NX); }) },
+      { key: "glorys", color: "var(--cool)",   w: 1.8, v: DEPTHS.map(function (_, k) { return valueAt(fr.truth[k], ic, jc, NXC); }) },
+      { key: "clim",   color: "var(--ink-3)",  w: 1.5, v: DEPTHS.map(function (_, k) { return valueAt(D.clim[state.date][k], ic, jc, NXC); }) }
+    ];
+    var all = [];
+    series.forEach(function (s) { s.v.forEach(function (x) { if (isFinite(x)) all.push(x); }); });
+    var svg = document.getElementById("profile");
+    if (!all.length) { svg.innerHTML = ""; document.getElementById("profile-note").textContent = "No ocean at this point — pick a wet cell."; return; }
+
+    var L = 44, R = 12, T = 12, B = 34, W = 340, H = 260;
+    var tmin = Math.floor(Math.min.apply(null, all) - 1), tmax = Math.ceil(Math.max.apply(null, all) + 1);
+    // Depth on a mild power scale: the top 200 m is where the signal is, and a
+    // linear axis would squash it into a fifth of the panel.
+    function ty(d) { return T + Math.pow(d / 1000, 0.42) * (H - T - B); }
+    function tx(v) { return L + (v - tmin) / (tmax - tmin) * (W - L - R); }
+
+    var out = [];
+    [0, 50, 100, 200, 500, 1000].forEach(function (d) {
+      var y = ty(d).toFixed(1);
+      out.push('<line class="axis" x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '"/>');
+      out.push('<text class="tick" x="' + (L - 7) + '" y="' + (ty(d) + 3.5).toFixed(1) + '" text-anchor="end">' + d + '</text>');
+    });
+    var step = (tmax - tmin) > 18 ? 6 : (tmax - tmin) > 9 ? 3 : 2;
+    for (var v = Math.ceil(tmin / step) * step; v <= tmax; v += step) {
+      out.push('<text class="tick" x="' + tx(v).toFixed(1) + '" y="' + (H - B + 15) + '" text-anchor="middle">' + v + '</text>');
+    }
+    out.push('<text class="axlabel" x="' + L + '" y="' + (H - 4) + '">Temperature °C</text>');
+    out.push('<text class="axlabel" transform="translate(11,' + (T + 54) + ') rotate(-90)">Depth m</text>');
+
+    series.forEach(function (s) {
+      var pts = [];
+      s.v.forEach(function (x, k) { if (isFinite(x)) pts.push(tx(x).toFixed(1) + "," + ty(DEPTHS[k]).toFixed(1)); });
+      if (pts.length > 1) out.push('<polyline fill="none" stroke="' + s.color + '" stroke-width="' + s.w +
+        '" stroke-linejoin="round" stroke-linecap="round" points="' + pts.join(" ") + '"/>');
+    });
+    svg.innerHTML = out.join("");
+
+    var m = series[0].v[state.depth], g = series[1].v[state.depth];
+    document.getElementById("profile-note").innerHTML = isFinite(m) && isFinite(g)
+      ? "At <b>" + DEPTHS[state.depth] + " m</b> the reconstruction reads <b>" + m.toFixed(2) +
+        " °C</b> against GLORYS <b>" + g.toFixed(2) + " °C</b> — a gap of <b>" +
+        Math.abs(m - g).toFixed(2) + " °C</b>."
+      : "Click anywhere on the basin to move the probe.";
+  }
+
+  // ---- validation table ---------------------------------------------------
+  (function () {
+    var rows = (D.argo && D.argo.rows) || [], body = document.getElementById("argo-body");
+    rows.filter(function (r) { return [50, 75, 100, 150, 200].indexOf(Math.round(r.depth)) >= 0; })
+      .forEach(function (r) {
+        var gain = r.gain >= 0 ? "+" + r.gain.toFixed(1) + "%" : r.gain.toFixed(1) + "%";
+        body.insertAdjacentHTML("beforeend",
+          "<tr><td>" + Math.round(r.depth) + " m</td><td>" + r.clim.toFixed(3) +
+          "</td><td class='best'>" + r.model.toFixed(3) + "</td><td>" + gain + "</td></tr>");
+      });
+  })();
+
+  // ---- controls -----------------------------------------------------------
+  var datesEl = document.getElementById("dates");
+  M.dates.forEach(function (d) {
+    var b = document.createElement("button");
+    b.className = "date"; b.textContent = d.slice(5);
+    b.setAttribute("aria-pressed", String(d === state.date));
+    b.addEventListener("click", function () {
+      state.date = d;
+      [].forEach.call(datesEl.children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
+      drawMap(); updateReadouts();
+    });
+    datesEl.appendChild(b);
+  });
+
+  [].forEach.call(document.querySelectorAll(".seg"), function (b) {
+    b.addEventListener("click", function () {
+      state.layer = b.dataset.layer;
+      [].forEach.call(b.parentNode.children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
+      document.getElementById("depthrow").style.visibility = state.layer === "t" ? "visible" : "hidden";
+      drawMap(); updateReadouts();
+    });
+  });
+
+  var depth = document.getElementById("depth");
+  depth.addEventListener("input", function () {
+    state.depth = +depth.value;
+    document.getElementById("depthval").textContent = DEPTHS[state.depth] + " m";
+    if (state.layer === "t") drawMap();
+    updateReadouts();
+  });
+
+  function pick(ev) {
+    var r = cv.getBoundingClientRect();
+    var x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
+    state.j = Math.max(0, Math.min(NX - 1, Math.floor(x * NX)));
+    state.i = Math.max(0, Math.min(NY - 1, NY - 1 - Math.floor(y * NY)));
+    updateReadouts();
+  }
+  cv.addEventListener("click", pick);
+
+  // ---- go -----------------------------------------------------------------
+  document.getElementById("depthval").textContent = DEPTHS[state.depth] + " m";
+  drawMap();
+  updateReadouts();
+})();
+</script>
