@@ -3,6 +3,8 @@
 Reconstruct daily depth-wise subsurface ocean temperature over the North Indian Ocean
 (5–30°N, 45–105°E) at 0.25°, from surface satellite observations only.
 
+- **[`docs/PPT_HANDOFF.md`](docs/PPT_HANDOFF.md)** — asset pack, architecture diagrams and slide copy for whoever builds the deck
+- **[`docs/RUNBOOK.md`](docs/RUNBOOK.md)** — how to run, check and explain this without help
 - **[`docs/RESULTS.md`](docs/RESULTS.md)** — measured skill, by depth, with the failure analysis
 - **[`docs/METHODOLOGY.md`](docs/METHODOLOGY.md)** — how it is implemented, stage by stage
 - [`docs/PS.md`](docs/PS.md) — problem statement and dataset table
@@ -13,11 +15,19 @@ Reconstruct daily depth-wise subsurface ocean temperature over the North Indian 
 
 | | |
 |---|---|
-| Pipeline | complete, 16 self-check assertions passing |
-| Data | 3 years (2019–2021) downloaded and built — 28.8 GB raw, 6 processed cubes |
-| Baselines + U-Net | **run.** U-Net mean RMSE **0.889 °C** vs **1.031 °C** climatology (+13.8%) |
-| Peak skill | **+21.3% at 100 m**, ACC 0.636 — the thermocline |
-| Open | ARGO validation, netCDF export, BoB/Arabian Sea demo, ViT ablations |
+| Pipeline | complete, 15 self-checks passing |
+| Data | **8 years (2014–2021)** built and verified; staged so peak disk stays under 10 GB |
+| Split | train 2014–2019 · test **2020 and 2021**, both held out |
+| Baselines + U-Net | U-Net mean RMSE **0.783 °C** vs **0.889 °C** climatology (+11.9%) |
+| Peak skill | **+20.2% at 100 m**, ACC 0.608 — the thermocline |
+| Diagnostics | TCHP corr **0.897**, D26 0.830, MLD 0.741 — none computable from SST alone |
+| Independent check | **8,015 Argo profiles**: 0.852 °C vs 0.900 climatology (+5.3%; +8–11% at 75–200 m) |
+| Coverage | Argo gives **11 profiles/day** in this basin; the model gives **11,759** |
+| Output | `pred_2020.nc`, `pred_2021.nc` standardized daily netCDF; 6 figures in `figs/` |
+| Open | cyclone case study, thermocline bias correction, uncertainty, NRT demo |
+
+Full numbers and the honest comparison against the earlier 3-year run are in
+[`docs/RESULTS.md`](docs/RESULTS.md).
 
 ## Environment
 
@@ -89,10 +99,23 @@ cd ~/oceanembed
 ~/envs/ocean/bin/python -m scripts.pipeline build-target 2019
 ~/envs/ocean/bin/python -m scripts.pipeline build-inputs 2019
 
+# stage many years: fetch -> build -> verify -> delete raw, one year at a time
+~/envs/ocean/bin/python -m scripts.pipeline stage --years 2014 2015 2016 2017 2018
+
 # baselines then the model — identical scoring path for all three
-~/envs/ocean/bin/python -m scripts.train climatology --train 2019 2020 --test 2021
-~/envs/ocean/bin/python -m scripts.train linear      --train 2019 2020 --test 2021
-~/envs/ocean/bin/python -m scripts.train unet        --train 2019 2020 --test 2021 --epochs 40
+TR="2014 2015 2016 2017 2018 2019"; TE="2020 2021"
+~/envs/ocean/bin/python -m scripts.train climatology --train $TR --test $TE
+~/envs/ocean/bin/python -m scripts.train linear      --train $TR --test $TE
+~/envs/ocean/bin/python -m scripts.train unet        --train $TR --test $TE --epochs 250
+
+# standardized output + operational diagnostics, then figures
+~/envs/ocean/bin/python -m scripts.predict --train $TR --test 2021
+~/envs/ocean/bin/python -m scripts.figures
+
+# independent validation against Argo profiles
+~/envs/ocean/bin/copernicusmarine get   --dataset-id cmems_obs-ins_glo_phy-temp-sal_my_easycora_irr   --filter "*global/202[01]/*_PR_PF.nc" --output-directory ~/ocean/argo_raw
+~/envs/ocean/bin/python -m scripts.argo collect --years 2020 2021
+~/envs/ocean/bin/python -m scripts.argo score
 ```
 
 `fetch` skips files that already exist, so it is safe to re-run after an interruption. It aborts if

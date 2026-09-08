@@ -1,0 +1,564 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OceanEmbed Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* Committed light design. The reference is a bright, near-white app, so this
+   deliberately does NOT follow the OS to dark — every colour is painted
+   explicitly and the page looks the same on any machine. */
+:root {
+  color-scheme: light;
+  --stage:    #EDF1F7;
+  --glow-a:   #D3E6FA;
+  --glow-b:   #E1ECFB;
+  --glow-c:   #EFE8FB;
+  --card:     #FFFFFF;
+  --ink:      #10151C;
+  --ink-2:    #78838F;
+  --ink-3:    #A7B1BC;
+  --hair:     #EDF1F6;
+  --accent:   #3E7BFA;
+  --accent-sk:#EDF3FE;
+  --ok:       #17C26A;
+  --amber:    #EFA23C;
+  --sea-1:    #BFDDF5;
+  --sea-2:    #6BA6DC;
+  --sea-3:    #3E7BFA;
+  --card-sh:  0 1px 2px rgba(16,21,28,.04), 0 10px 26px -12px rgba(16,21,28,.16);
+  --sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0; color: var(--ink);
+  font-family: var(--sans); font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; min-height: 100vh;
+  padding: 42px 28px 64px;
+  background:
+    radial-gradient(58% 42% at 8% 4%,   var(--glow-a) 0%, transparent 60%),
+    radial-gradient(52% 40% at 96% 12%, var(--glow-c) 0%, transparent 58%),
+    radial-gradient(80% 45% at 50% 96%, var(--glow-b) 0%, transparent 64%),
+    var(--stage);
+  background-attachment: fixed;
+}
+
+.wrap { max-width: 1120px; margin: 0 auto; }
+
+/* ---------- header ---------- */
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 26px; }
+h1 { font-size: 36px; font-weight: 700; letter-spacing: -.035em; margin: 0; display: flex; align-items: center; gap: 9px; }
+h1 .chev { color: var(--ink-3); font-size: 19px; font-weight: 600; }
+.place { display: flex; align-items: center; gap: 8px; margin: 7px 0 0; color: var(--ink-2); font-size: 14px; }
+.place .mono { font-family: var(--mono); font-size: 13px; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 8px; flex: none;
+  padding: 8px 16px 8px 9px; border-radius: 999px;
+  background: var(--accent); color: #FFFFFF; box-shadow: 0 8px 18px -8px rgba(62,123,250,.75);
+}
+.pill .face { width: 21px; height: 21px; border-radius: 50%; background: rgba(255,255,255,.26); display: grid; place-items: center; font-size: 12px; }
+.pill b { font-family: var(--mono); font-weight: 600; font-size: 14px; }
+
+/* ---------- grid ---------- */
+.deck { display: grid; gap: 18px; }
+.r3 { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 18px; }
+.r2 { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: 18px; align-items: start; }
+@media (max-width: 980px) { .r3 { grid-template-columns: 1fr 1fr; } .r2 { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .r3 { grid-template-columns: 1fr; } }
+
+.card { background: var(--card); border-radius: 24px; box-shadow: var(--card-sh); padding: 22px; }
+.card-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.card-h h2 { font-size: 18px; font-weight: 600; letter-spacing: -.02em; margin: 0; }
+.card-h .arrow { color: var(--ink-3); font-size: 17px; font-family: var(--mono); }
+.sub { color: var(--ink-3); font-size: 13px; margin: 4px 0 0; }
+
+/* illustration tiles */
+.tile { display: flex; flex-direction: column; }
+.tile h2 { font-size: 20px; }
+.art { position: relative; height: 116px; margin: 14px 0 8px; display: grid; place-items: center; }
+.art svg { width: 100%; height: 100%; }
+.check {
+  position: absolute; right: 18%; bottom: 6px;
+  width: 28px; height: 28px; border-radius: 50%; background: var(--ok);
+  display: grid; place-items: center; color: #FFFFFF; font-size: 14px; font-weight: 700;
+  box-shadow: 0 4px 10px rgba(23,194,106,.45); border: 3px solid var(--card);
+}
+.more {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--hair); margin-top: auto; padding-top: 13px;
+  color: var(--ink-2); font-size: 13.5px; font-weight: 500;
+}
+.more .arrow { color: var(--ink-3); font-family: var(--mono); }
+
+/* big number + sparkline */
+.metric { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-top: 20px; }
+.metric .n { font-family: var(--mono); font-size: 44px; font-weight: 600; letter-spacing: -.04em; line-height: 1; }
+.metric .u { color: var(--ink-3); font-size: 14px; font-family: var(--mono); margin-left: 6px; }
+.metric .cap { color: var(--ink-2); font-size: 13px; margin-top: 10px; }
+.spark { flex: 0 0 176px; }
+
+/* ---------- map: a dark instrument panel inside the light page ---------- */
+.card.dark {
+  --card:  #111A24;
+  --ink:   #EEF3F8;
+  --ink-2: #93A3B4;
+  --ink-3: #6B7C8D;
+  --hair:  #1E2B39;
+  background: var(--card);
+  box-shadow: 0 2px 4px rgba(16,21,28,.10), 0 18px 40px -16px rgba(16,21,28,.45);
+}
+.card.dark .card-h h2 { color: var(--ink); }
+.card.dark .date[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
+
+.canvas-wrap { position: relative; border-radius: 16px; overflow: hidden; margin-top: 14px; background: var(--hair); }
+canvas#map { display: block; width: 100%; height: auto; cursor: crosshair; }
+.pin { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%;
+       border: 3px solid #FFFFFF; background: var(--accent); box-shadow: 0 2px 8px rgba(16,21,28,.45); pointer-events: none; }
+
+.segs { display: flex; gap: 6px; margin-top: 14px; }
+.seg { flex: 1; appearance: none; border: 0; background: var(--hair); cursor: pointer;
+       font: 600 12.5px/1 var(--sans); color: var(--ink-2); padding: 10px 6px; border-radius: 10px; transition: .16s; }
+.seg[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
+.seg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.slider { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.slider span:first-child { font-size: 12.5px; color: var(--ink-3); font-weight: 600; }
+input[type="range"] { flex: 1; accent-color: var(--accent); }
+.depthval { font-family: var(--mono); font-size: 13px; font-weight: 600; min-width: 58px; text-align: right; }
+
+.dates { display: flex; gap: 7px; margin-top: 14px; overflow-x: auto; scrollbar-width: none; }
+.dates::-webkit-scrollbar { display: none; }
+.date { appearance: none; border: 0; background: var(--hair); cursor: pointer; flex: none;
+        font: 500 12px/1 var(--mono); color: var(--ink-2); padding: 9px 12px; border-radius: 10px; transition: .16s; }
+.date[aria-pressed="true"] { background: var(--ink); color: #FFFFFF; }
+.date:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.scalebar { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.ramp { flex: 1; height: 7px; border-radius: 4px; }
+.scalebar span { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+
+/* ---------- profile + table ---------- */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin: 14px 0 2px; }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.legend span { font-size: 12.5px; color: var(--ink-2); }
+svg { display: block; width: 100%; height: auto; }
+.axis { stroke: var(--hair); stroke-width: 1; }
+.tick { font: 400 10px var(--mono); fill: var(--ink-3); }
+.axlabel { font: 600 10px var(--sans); fill: var(--ink-3); }
+
+table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; margin-top: 14px; }
+th { text-align: right; font: 600 11px var(--sans); color: var(--ink-3); padding: 0 0 8px; }
+th:first-child, td:first-child { text-align: left; }
+td { text-align: right; padding: 7px 0; border-top: 1px solid var(--hair); }
+td.best { color: var(--accent); font-weight: 600; }
+
+.note { font-size: 12.5px; color: var(--ink-2); line-height: 1.6; margin: 14px 0 0; }
+.note b { color: var(--ink); font-weight: 600; }
+
+footer { margin-top: 26px; font-size: 12px; color: var(--ink-3); display: flex; gap: 18px; flex-wrap: wrap; }
+footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <div class="head">
+    <div>
+      <h1><span id="hdr-basin">Arabian Sea</span><span class="chev">⌄</span></h1>
+      <p class="place"><span>🌊</span><span class="mono" id="hdr-pos">18.13°N, 69.13°E</span>
+        <span>·</span><span class="mono" id="hdr-date">2021-08-29</span></p>
+    </div>
+    <div class="pill"><span class="face" id="pill-face">◍</span><b id="pill-val">—</b></div>
+  </div>
+
+  <div class="deck">
+
+    <div class="r3">
+      <section class="card tile">
+        <h2 id="t1-title">—</h2>
+        <p class="sub" id="t1-sub">Heat potential</p>
+        <div class="art">
+          <svg viewBox="0 0 120 116" aria-hidden="true">
+            <defs>
+              <linearGradient id="gDrop" x1="0" y1="0" x2="0.4" y2="1">
+                <stop offset="0%"   stop-color="#BFDDF5"/>
+                <stop offset="55%"  stop-color="#6BA6DC"/>
+                <stop offset="100%" stop-color="#3E7BFA"/>
+              </linearGradient>
+              <pattern id="gGrid" width="17" height="17" patternUnits="userSpaceOnUse">
+                <path d="M17 0 H0 V17" fill="none" stroke="#EDF1F6" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect x="8" y="6" width="104" height="102" fill="url(#gGrid)" rx="8"/>
+            <path d="M60 18 C60 18 88 52 88 69 A28 28 0 0 1 32 69 C32 52 60 18 60 18 Z"
+                  fill="url(#gDrop)" opacity="0.93"/>
+            <ellipse cx="49" cy="59" rx="9" ry="13" fill="#FFFFFF" opacity="0.30"/>
+          </svg>
+          <span class="check" id="t1-check">✓</span>
+        </div>
+        <div class="more"><span>Show details</span><span class="arrow">›</span></div>
+      </section>
+
+      <section class="card tile">
+        <h2 id="t2-title">—</h2>
+        <p class="sub">Warm layer to 26 °C</p>
+        <div class="art">
+          <svg viewBox="0 0 120 116" aria-hidden="true">
+            <defs>
+              <linearGradient id="gCol" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="#F5C9A0"/>
+                <stop offset="34%"  stop-color="#BFDDF5"/>
+                <stop offset="100%" stop-color="#22406B"/>
+              </linearGradient>
+            </defs>
+            <rect x="8" y="6" width="104" height="102" fill="url(#gGrid)" rx="8"/>
+            <rect x="32" y="14" width="56" height="88" rx="13" fill="url(#gCol)" opacity="0.94"/>
+            <line id="t2-line" x1="26" y1="52" x2="94" y2="52"
+                  stroke="#FFFFFF" stroke-width="2.8" stroke-dasharray="6 5"/>
+          </svg>
+          <span class="check" id="t2-check">✓</span>
+        </div>
+        <div class="more"><span>Show details</span><span class="arrow">›</span></div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2>Heat potential</h2><span class="arrow">›</span></div>
+        <p class="sub">Energy stored above 26 °C</p>
+        <div class="metric">
+          <div>
+            <div><span class="n" id="m-now">—</span><span class="u">kJ cm⁻²</span></div>
+            <p class="cap" id="m-cap">across 2021 at this point</p>
+          </div>
+          <svg class="spark" id="spark" viewBox="0 0 176 66" role="img" aria-label="Heat potential across the year"></svg>
+        </div>
+      </section>
+    </div>
+
+    <div class="r2">
+      <section class="card dark">
+        <div class="card-h"><h2>Basin view</h2><span class="arrow">Tap to move the probe</span></div>
+        <div class="canvas-wrap">
+          <canvas id="map" width="240" height="100" aria-label="Reconstructed field"></canvas>
+          <div class="pin" id="pin" hidden></div>
+        </div>
+        <div class="scalebar"><span id="scale-lo">—</span><div class="ramp" id="ramp"></div><span id="scale-hi">—</span></div>
+        <div class="segs" role="group" aria-label="Layer">
+          <button class="seg" data-layer="t"    aria-pressed="true">Temperature</button>
+          <button class="seg" data-layer="tchp" aria-pressed="false">Heat</button>
+          <button class="seg" data-layer="d26"  aria-pressed="false">26 °C depth</button>
+          <button class="seg" data-layer="mld"  aria-pressed="false">Mixed layer</button>
+        </div>
+        <div class="slider" id="depthrow">
+          <span>Depth</span>
+          <input type="range" id="depth" min="0" max="14" value="7" step="1" aria-label="Depth">
+          <span class="depthval" id="depthval">100 m</span>
+        </div>
+        <div class="dates" id="dates" role="group" aria-label="Date"></div>
+      </section>
+
+      <div class="deck">
+        <section class="card">
+          <div class="card-h"><h2>Vertical profile</h2><span class="arrow">›</span></div>
+          <p class="sub">Reconstructed from the surface alone</p>
+          <div class="legend">
+            <span><i style="background:var(--accent)"></i>OceanEmbed</span>
+            <span><i style="background:var(--sea-2)"></i>GLORYS</span>
+            <span><i style="background:var(--ink-3)"></i>Climatology</span>
+          </div>
+          <svg id="profile" viewBox="0 0 340 230" role="img" aria-label="Temperature against depth"></svg>
+          <p class="note" id="profile-note">Tap the basin to move the probe.</p>
+        </section>
+
+        <section class="card">
+          <div class="card-h"><h2>Checked against 8,015 floats</h2></div>
+          <p class="sub">Argo profiles never seen in training</p>
+          <table>
+            <thead><tr><th>Depth</th><th>Climatology</th><th>OceanEmbed</th><th>Gain</th></tr></thead>
+            <tbody id="argo-body"></tbody>
+          </table>
+          <p class="note">Argo returns about <b>11 profiles a day</b> across this basin.
+            This model returns <b>11,759</b>.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Trained <b>2014–2019</b></span>
+    <span>Tested <b>2020–2021</b>, held out</span>
+    <span>U-Net <b>1.93 M</b> params</span>
+    <span>Grid <b>0.25° · 15 depths</b></span>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.OCEAN_DATA;
+  if (!D) { document.querySelector(".wrap").innerHTML =
+    "<p style='font:600 15px sans-serif'>data.js did not load. Keep index.html and data.js together.</p>"; return; }
+
+  var M = D.meta, NY = M.ny, NX = M.nx, NYC = M.nyc, NXC = M.nxc, CO = M.coarse;
+  var DEPTHS = M.depths;
+
+  function bytes(b64) {
+    var s = atob(b64), a = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i);
+    return a;
+  }
+  var cache = {};
+  function field(f) {
+    if (!f) return null;
+    if (!cache[f.d]) cache[f.d] = bytes(f.d);
+    return { u: cache[f.d], lo: f.lo, hi: f.hi };
+  }
+  function valueAt(f, i, j, nx) {
+    var g = field(f); if (!g) return NaN;
+    var v = g.u[i * nx + j];
+    return v === 0 ? NaN : g.lo + (v - 1) / 254 * (g.hi - g.lo);
+  }
+
+  var RAMPS = {
+    t:    [[38,63,110],[62,116,178],[126,177,222],[189,219,238],[247,232,206],[240,178,122],[214,110,88]],
+    tchp: [[233,240,250],[173,205,239],[123,163,225],[110,132,226],[143,110,205],[189,106,163]],
+    d26:  [[240,247,253],[186,215,239],[124,175,219],[64,124,186],[27,72,127]],
+    mld:  [[247,244,238],[219,206,183],[180,161,133],[132,113,90],[79,66,52]]
+  };
+  function ramp(name, x) {
+    var s = RAMPS[name], n = s.length - 1;
+    x = x < 0 ? 0 : x > 1 ? 1 : x;
+    var p = x * n, k = Math.min(Math.floor(p), n - 1), f = p - k;
+    var a = s[k], b = s[k + 1];
+    return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+  }
+  function cssRamp(name) {
+    var out = [];
+    for (var i = 0; i <= 8; i++) { var c = ramp(name, i / 8); out.push("rgb(" + (c[0]|0) + "," + (c[1]|0) + "," + (c[2]|0) + ")"); }
+    return "linear-gradient(90deg," + out.join(",") + ")";
+  }
+
+  var OPEN_ON = "2021-08-29";
+  var state = {
+    date: M.dates.indexOf(OPEN_ON) >= 0 ? OPEN_ON : M.dates[M.dates.length - 1],
+    layer: "t", depth: 7, i: 52, j: 96
+  };
+  var cv = document.getElementById("map"), cx = cv.getContext("2d");
+  var img = cx.createImageData(NX, NY);
+  // Matches --hair inside .card.dark, so land reads as part of the dark panel
+  // rather than a bright hole punched through it.
+  var LAND_RGB = [30, 43, 57];
+
+  function currentField() {
+    var fr = D.frames[state.date];
+    return state.layer === "t" ? fr.t[state.depth] : fr[state.layer];
+  }
+
+  function drawMap() {
+    var f = field(currentField()), px = img.data;
+    for (var i = 0; i < NY; i++) {
+      for (var j = 0; j < NX; j++) {
+        var src = (NY - 1 - i) * NX + j, dst = (i * NX + j) * 4;   // canvas y is flipped
+        var v = f.u[src];
+        if (v === 0) { px[dst] = LAND_RGB[0]; px[dst+1] = LAND_RGB[1]; px[dst+2] = LAND_RGB[2]; px[dst+3] = 255; }
+        else {
+          var c = ramp(state.layer, (v - 1) / 254);
+          px[dst] = c[0]; px[dst+1] = c[1]; px[dst+2] = c[2]; px[dst+3] = 255;
+        }
+      }
+    }
+    cx.putImageData(img, 0, 0);
+    var dp = state.layer === "t" ? 1 : 0;
+    var unit = state.layer === "t" ? "°C" : state.layer === "tchp" ? "kJ" : "m";
+    document.getElementById("scale-lo").textContent = f.lo.toFixed(dp) + " " + unit;
+    document.getElementById("scale-hi").textContent = f.hi.toFixed(dp) + " " + unit;
+    document.getElementById("ramp").style.background = cssRamp(state.layer);
+  }
+
+  function updateReadouts() {
+    var fr = D.frames[state.date], i = state.i, j = state.j;
+    var lat = M.lat[0] + i * 0.25, lon = M.lon[0] + j * 0.25;
+    document.getElementById("hdr-basin").textContent = lon >= 80 ? "Bay of Bengal" : "Arabian Sea";
+    document.getElementById("hdr-pos").textContent = lat.toFixed(2) + "°N, " + lon.toFixed(2) + "°E";
+    document.getElementById("hdr-date").textContent = state.date;
+
+    var tchp = valueAt(fr.tchp, i, j, NX);
+    var d26  = valueAt(fr.d26,  i, j, NX);
+
+    // The tile leads with the verdict, the way the reference leads with
+    // "No Leak". 60 kJ/cm2 is roughly where a cyclone keeps intensifying;
+    // 90 is where rapid intensification becomes likely.
+    var t1 = document.getElementById("t1-title"), t1s = document.getElementById("t1-sub"),
+        chk = document.getElementById("t1-check"),
+        pv = document.getElementById("pill-val"), pf = document.getElementById("pill-face");
+    if (!isFinite(tchp)) {
+      t1.textContent = "No data"; t1s.textContent = "Land or no ocean here";
+      chk.textContent = "–"; chk.style.background = "var(--ink-3)";
+      pv.textContent = "—"; pf.textContent = "◍";
+    } else {
+      var high = tchp >= 90, mid = tchp >= 60;
+      t1.textContent = high ? "High" : mid ? "Elevated" : "Low";
+      t1s.textContent = "Heat potential " + tchp.toFixed(0) + " kJ cm⁻²";
+      chk.textContent = mid ? "!" : "✓";
+      chk.style.background = high ? "var(--sea-3)" : mid ? "var(--amber)" : "var(--ok)";
+      pv.textContent = tchp.toFixed(0) + " kJ";
+      pf.textContent = mid ? "◍" : "✓";
+    }
+
+    var t2 = document.getElementById("t2-title"), c2 = document.getElementById("t2-check");
+    t2.textContent = isFinite(d26) ? d26.toFixed(0) + " m deep" : "No data";
+    c2.textContent = isFinite(d26) && d26 >= 100 ? "!" : "✓";
+    c2.style.background = isFinite(d26) && d26 >= 100 ? "var(--amber)" : "var(--ok)";
+    // The dashed rule tracks the real isotherm depth, so the illustration is a
+    // readout rather than decoration.
+    var line = document.getElementById("t2-line");
+    if (line) {
+      var y = isFinite(d26) ? 18 + Math.min(d26, 200) / 200 * 78 : 52;
+      line.setAttribute("y1", y.toFixed(1)); line.setAttribute("y2", y.toFixed(1));
+    }
+
+    document.getElementById("m-now").textContent = isFinite(tchp) ? tchp.toFixed(0) : "—";
+
+    var pin = document.getElementById("pin");
+    pin.hidden = false;
+    pin.style.left = ((j + 0.5) / NX * 100) + "%";
+    pin.style.top = ((NY - 1 - i + 0.5) / NY * 100) + "%";
+
+    drawSpark();
+    drawProfile();
+  }
+
+  function drawSpark() {
+    var svg = document.getElementById("spark"), W = 176, H = 66, P = 6;
+    var vals = M.dates.map(function (d) { return valueAt(D.frames[d].tchp, state.i, state.j, NX); });
+    var ok = vals.filter(isFinite);
+    if (ok.length < 2) { svg.innerHTML = ""; document.getElementById("m-cap").textContent = "no ocean here"; return; }
+    var lo = Math.min.apply(null, ok), hi = Math.max.apply(null, ok), span = hi - lo || 1;
+    var x = function (k) { return P + k / (M.dates.length - 1) * (W - 2 * P); };
+    var y = function (v) { return H - P - (v - lo) / span * (H - 2 * P); };
+
+    var pts = [];
+    vals.forEach(function (v, k) { if (isFinite(v)) pts.push(x(k).toFixed(1) + "," + y(v).toFixed(1)); });
+    var here = M.dates.indexOf(state.date);
+    var out = [
+      '<path d="M' + pts[0] + " L" + pts.join(" L") + " L" + x(M.dates.length - 1).toFixed(1) +
+        "," + (H - P) + " L" + x(0).toFixed(1) + "," + (H - P) + ' Z" fill="var(--accent-sk)"/>',
+      '<polyline fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" ' +
+        'stroke-linejoin="round" points="' + pts.join(" ") + '"/>'
+    ];
+    if (here >= 0 && isFinite(vals[here])) {
+      out.push('<circle cx="' + x(here).toFixed(1) + '" cy="' + y(vals[here]).toFixed(1) +
+        '" r="4" fill="#FFFFFF" stroke="var(--accent)" stroke-width="2.6"/>');
+    }
+    svg.innerHTML = out.join("");
+    document.getElementById("m-cap").textContent =
+      "ranges " + lo.toFixed(0) + "–" + hi.toFixed(0) + " here across 2021";
+  }
+
+  function drawProfile() {
+    var fr = D.frames[state.date], i = state.i, j = state.j;
+    var ic = Math.min(Math.floor(i / CO), NYC - 1), jc = Math.min(Math.floor(j / CO), NXC - 1);
+    var series = [
+      { color: "var(--accent)", w: 2.6, v: DEPTHS.map(function (_, k) { return valueAt(fr.t[k], i, j, NX); }) },
+      { color: "var(--sea-2)",  w: 1.9, v: DEPTHS.map(function (_, k) { return valueAt(fr.truth[k], ic, jc, NXC); }) },
+      { color: "var(--ink-3)",  w: 1.6, v: DEPTHS.map(function (_, k) { return valueAt(D.clim[state.date][k], ic, jc, NXC); }) }
+    ];
+    var all = [];
+    series.forEach(function (s) { s.v.forEach(function (x) { if (isFinite(x)) all.push(x); }); });
+    var svg = document.getElementById("profile");
+    if (!all.length) { svg.innerHTML = ""; document.getElementById("profile-note").textContent = "No ocean here — pick a wet cell."; return; }
+
+    var L = 40, R = 10, T = 10, B = 32, W = 340, H = 230;
+    var tmin = Math.floor(Math.min.apply(null, all) - 1), tmax = Math.ceil(Math.max.apply(null, all) + 1);
+    // Mild power scale: the top 200 m carries the signal; a linear axis would
+    // squash it into a fifth of the panel.
+    function ty(d) { return T + Math.pow(d / 1000, 0.42) * (H - T - B); }
+    function tx(v) { return L + (v - tmin) / (tmax - tmin) * (W - L - R); }
+
+    var out = [];
+    [0, 50, 100, 200, 500, 1000].forEach(function (d) {
+      var yy = ty(d);
+      out.push('<line class="axis" x1="' + L + '" y1="' + yy.toFixed(1) + '" x2="' + (W - R) + '" y2="' + yy.toFixed(1) + '"/>');
+      out.push('<text class="tick" x="' + (L - 6) + '" y="' + (yy + 3.4).toFixed(1) + '" text-anchor="end">' + d + '</text>');
+    });
+    var step = (tmax - tmin) > 18 ? 6 : (tmax - tmin) > 9 ? 3 : 2;
+    for (var v = Math.ceil(tmin / step) * step; v <= tmax; v += step) {
+      out.push('<text class="tick" x="' + tx(v).toFixed(1) + '" y="' + (H - B + 16) + '" text-anchor="middle">' + v + '</text>');
+    }
+    out.push('<text class="axlabel" x="' + L + '" y="' + (H - 3) + '">Temperature °C</text>');
+    out.push('<text class="axlabel" transform="translate(10,' + (T + 48) + ') rotate(-90)">Depth m</text>');
+
+    series.forEach(function (s) {
+      var pts = [];
+      s.v.forEach(function (x, k) { if (isFinite(x)) pts.push(tx(x).toFixed(1) + "," + ty(DEPTHS[k]).toFixed(1)); });
+      if (pts.length > 1) out.push('<polyline fill="none" stroke="' + s.color + '" stroke-width="' + s.w +
+        '" stroke-linejoin="round" stroke-linecap="round" points="' + pts.join(" ") + '"/>');
+    });
+    svg.innerHTML = out.join("");
+
+    var m = series[0].v[state.depth], g = series[1].v[state.depth];
+    document.getElementById("profile-note").innerHTML = isFinite(m) && isFinite(g)
+      ? "At <b>" + DEPTHS[state.depth] + " m</b> we read <b>" + m.toFixed(2) +
+        " °C</b>, GLORYS <b>" + g.toFixed(2) + " °C</b>."
+      : "Tap the basin to move the probe.";
+  }
+
+  (function () {
+    var rows = (D.argo && D.argo.rows) || [], body = document.getElementById("argo-body");
+    rows.filter(function (r) { return [50, 75, 100, 150, 200].indexOf(Math.round(r.depth)) >= 0; })
+      .forEach(function (r) {
+        var gain = (r.gain >= 0 ? "+" : "") + r.gain.toFixed(1) + "%";
+        body.insertAdjacentHTML("beforeend",
+          "<tr><td>" + Math.round(r.depth) + " m</td><td>" + r.clim.toFixed(3) +
+          "</td><td class='best'>" + r.model.toFixed(3) + "</td><td>" + gain + "</td></tr>");
+      });
+  })();
+
+  var datesEl = document.getElementById("dates");
+  M.dates.forEach(function (d) {
+    var b = document.createElement("button");
+    b.className = "date"; b.textContent = d.slice(5);
+    b.setAttribute("aria-pressed", String(d === state.date));
+    b.addEventListener("click", function () {
+      state.date = d;
+      [].forEach.call(datesEl.children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
+      drawMap(); updateReadouts();
+    });
+    datesEl.appendChild(b);
+  });
+
+  [].forEach.call(document.querySelectorAll(".seg"), function (b) {
+    b.addEventListener("click", function () {
+      state.layer = b.dataset.layer;
+      [].forEach.call(b.parentNode.children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
+      document.getElementById("depthrow").style.visibility = state.layer === "t" ? "visible" : "hidden";
+      drawMap(); updateReadouts();
+    });
+  });
+
+  var depth = document.getElementById("depth");
+  depth.addEventListener("input", function () {
+    state.depth = +depth.value;
+    document.getElementById("depthval").textContent = DEPTHS[state.depth] + " m";
+    if (state.layer === "t") drawMap();
+    updateReadouts();
+  });
+
+  cv.addEventListener("click", function (ev) {
+    var r = cv.getBoundingClientRect();
+    state.j = Math.max(0, Math.min(NX - 1, Math.floor((ev.clientX - r.left) / r.width * NX)));
+    state.i = Math.max(0, Math.min(NY - 1, NY - 1 - Math.floor((ev.clientY - r.top) / r.height * NY)));
+    updateReadouts();
+  });
+
+  document.getElementById("depthval").textContent = DEPTHS[state.depth] + " m";
+  drawMap();
+  updateReadouts();
+})();
+</script>
