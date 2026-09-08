@@ -5,187 +5,221 @@
 
 <style>
 :root {
-  --ground:      #EEF4F9;
-  --ground-2:    #E3EDF5;
-  --card:        #FFFFFF;
-  --ink:         #0B1F33;
-  --ink-2:       #46617A;
-  --ink-3:       #8AA2B6;
-  --line:        #DCE7F0;
-  --accent:      #E8743B;
-  --accent-soft: #FBEAE0;
-  --cool:        #2E7BA6;
-  --ok:          #1F8A70;
-  --ok-soft:     #DFF0EA;
-  --warn:        #C4622D;
-  --warn-soft:   #FAE9DC;
-  --crit:        #B3402C;
-  --crit-soft:   #F8E0DB;
-  --shadow:      0 1px 2px rgba(11,31,51,.05), 0 8px 24px -14px rgba(11,31,51,.20);
-  --shadow-lift: 0 2px 6px rgba(11,31,51,.07), 0 18px 44px -20px rgba(11,31,51,.30);
-  --r: 18px;
+  --bg:        #F2F7FC;
+  --bg-glow-a: #D8E7FA;
+  --bg-glow-b: #E6EFF8;
+  --bg-glow-c: #F4F1FB;
+  --card:      #FFFFFF;
+  --ink:       #101A28;
+  --ink-2:     #6B7A8D;
+  --ink-3:     #9AA8B8;
+  --hair:      #EDF2F7;
+  --accent:    #5B7CFA;
+  --accent-2:  #8FB4F5;
+  --accent-sk: #EEF3FF;
+  --ok:        #1FBF75;
+  --ok-sk:     #E6F7EF;
+  --warn:      #EFA23C;
+  --warn-sk:   #FDF3E4;
+  --crit:      #EC6A5A;
+  --crit-sk:   #FCEBE8;
+  --sea-1:     #BBD8F2;
+  --sea-2:     #6FA8DC;
+  --shadow:    0 1px 1px rgba(24,52,94,.03), 0 6px 22px -8px rgba(24,52,94,.10);
+  --shadow-up: 0 2px 4px rgba(24,52,94,.05), 0 14px 34px -12px rgba(24,52,94,.16);
+  --r:   22px;
+  --r-s: 16px;
   --sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ground:      #071320;
-    --ground-2:    #0B1E2D;
-    --card:        #0F2537;
-    --ink:         #E7F0F7;
-    --ink-2:       #9CB5C8;
-    --ink-3:       #64809A;
-    --line:        #1B3448;
-    --accent-soft: #3A2318;
-    --ok-soft:     #0F2E27;
-    --warn-soft:   #33210F;
-    --crit-soft:   #331A15;
-    --shadow:      0 1px 2px rgba(0,0,0,.30), 0 8px 24px -14px rgba(0,0,0,.60);
-    --shadow-lift: 0 2px 6px rgba(0,0,0,.35), 0 18px 44px -20px rgba(0,0,0,.70);
+    --bg:        #0A1420;
+    --bg-glow-a: #12263D;
+    --bg-glow-b: #0E1F31;
+    --bg-glow-c: #161B33;
+    --card:      #111F2E;
+    --ink:       #EAF1F8;
+    --ink-2:     #93A5B8;
+    --ink-3:     #62748A;
+    --hair:      #1B2C3E;
+    --accent:    #7E9BFF;
+    --accent-2:  #4C6FD4;
+    --accent-sk: #1A2440;
+    --ok-sk:     #102E22;
+    --warn-sk:   #2E2313;
+    --crit-sk:   #331C19;
+    --shadow:    0 1px 1px rgba(0,0,0,.30), 0 6px 22px -8px rgba(0,0,0,.55);
+    --shadow-up: 0 2px 4px rgba(0,0,0,.35), 0 14px 34px -12px rgba(0,0,0,.65);
   }
 }
 
 :root[data-theme="dark"] {
-  --ground:      #071320;
-  --ground-2:    #0B1E2D;
-  --card:        #0F2537;
-  --ink:         #E7F0F7;
-  --ink-2:       #9CB5C8;
-  --ink-3:       #64809A;
-  --line:        #1B3448;
-  --accent-soft: #3A2318;
-  --ok-soft:     #0F2E27;
-  --warn-soft:   #33210F;
-  --crit-soft:   #331A15;
-  --shadow:      0 1px 2px rgba(0,0,0,.30), 0 8px 24px -14px rgba(0,0,0,.60);
-  --shadow-lift: 0 2px 6px rgba(0,0,0,.35), 0 18px 44px -20px rgba(0,0,0,.70);
+  --bg:        #0A1420;
+  --bg-glow-a: #12263D;
+  --bg-glow-b: #0E1F31;
+  --bg-glow-c: #161B33;
+  --card:      #111F2E;
+  --ink:       #EAF1F8;
+  --ink-2:     #93A5B8;
+  --ink-3:     #62748A;
+  --hair:      #1B2C3E;
+  --accent:    #7E9BFF;
+  --accent-2:  #4C6FD4;
+  --accent-sk: #1A2440;
+  --ok-sk:     #102E22;
+  --warn-sk:   #2E2313;
+  --crit-sk:   #331C19;
+  --shadow:    0 1px 1px rgba(0,0,0,.30), 0 6px 22px -8px rgba(0,0,0,.55);
+  --shadow-up: 0 2px 4px rgba(0,0,0,.35), 0 14px 34px -12px rgba(0,0,0,.65);
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: linear-gradient(168deg, var(--ground-2) 0%, var(--ground) 42%);
-  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(70% 55% at 12% 0%,   var(--bg-glow-a) 0%, transparent 60%),
+    radial-gradient(60% 50% at 100% 18%, var(--bg-glow-c) 0%, transparent 62%),
+    radial-gradient(90% 60% at 50% 100%, var(--bg-glow-b) 0%, transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
-.wrap { max-width: 1180px; margin: 0 auto; padding: 28px 22px 44px; }
+.wrap { max-width: 1060px; margin: 0 auto; padding: 40px 24px 56px; }
 
 /* ---------- header ---------- */
-.top { display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
-.top-left { flex: 1 1 320px; min-width: 0; }
-.eyebrow {
-  font-size: 11px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase;
-  color: var(--ink-3); margin: 0 0 6px;
+.top { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 26px; }
+.top-left { flex: 1 1 300px; min-width: 0; }
+h1 {
+  font-size: 34px; font-weight: 700; letter-spacing: -.03em; margin: 0;
+  display: flex; align-items: center; gap: 9px;
 }
-h1 { font-size: 30px; font-weight: 700; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
-.sub { margin: 5px 0 0; color: var(--ink-2); font-size: 14px; }
-.sub b { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+h1 .chev { color: var(--ink-3); font-size: 20px; font-weight: 600; }
+.place { display: flex; align-items: center; gap: 7px; margin: 7px 0 0; color: var(--ink-2); font-size: 14px; }
+.place .mono { font-family: var(--mono); }
 
-.risk {
+.score {
   display: inline-flex; align-items: center; gap: 9px;
-  padding: 9px 15px 9px 12px; border-radius: 999px;
-  background: var(--card); box-shadow: var(--shadow); border: 1px solid var(--line);
+  padding: 9px 16px 9px 11px; border-radius: 999px;
+  background: var(--accent); color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(91,124,250,.65);
 }
-.risk .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); }
-.risk .lbl { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
-.risk .val { font-family: var(--mono); font-weight: 600; font-size: 14px; }
+.score .face {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(255,255,255,.24);
+  display: grid; place-items: center; font-size: 11px;
+}
+.score b { font-family: var(--mono); font-weight: 600; font-size: 14px; letter-spacing: -.01em; }
 
-/* ---------- layout ---------- */
-.grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(0,1fr); gap: 16px; align-items: start; }
-@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-
+/* ---------- cards ---------- */
 .card {
-  background: var(--card); border: 1px solid var(--line);
-  border-radius: var(--r); box-shadow: var(--shadow); padding: 18px;
+  background: var(--card); border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 22px;
 }
-.card h2 {
-  font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--ink-3); margin: 0 0 14px;
+.card-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.card-h h2 { font-size: 17px; font-weight: 600; letter-spacing: -.015em; margin: 0; }
+.card-h .arrow { color: var(--ink-3); font-size: 17px; }
+.card-sub { margin: 0; color: var(--ink-3); font-size: 13px; }
+
+.row { display: grid; gap: 16px; margin-bottom: 16px; }
+.row.two   { grid-template-columns: 1fr 1fr; }
+.row.split { grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); align-items: start; }
+@media (max-width: 820px) { .row.split { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .row.two { grid-template-columns: 1fr; } }
+
+/* status cards, echoing the reference's paired tiles */
+.status { display: flex; flex-direction: column; min-height: 178px; }
+.status .badge {
+  margin: 14px 0 auto; align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 13px 7px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
 }
-.stack { display: flex; flex-direction: column; gap: 16px; }
+.status .badge .tick {
+  width: 17px; height: 17px; border-radius: 50%; display: grid; place-items: center;
+  color: #fff; font-size: 10px; font-weight: 700;
+}
+.b-ok   { background: var(--ok-sk);   color: var(--ok); }
+.b-ok   .tick { background: var(--ok); }
+.b-warn { background: var(--warn-sk); color: var(--warn); }
+.b-warn .tick { background: var(--warn); }
+.b-crit { background: var(--crit-sk); color: var(--crit); }
+.b-crit .tick { background: var(--crit); }
+
+.status .figure { display: flex; align-items: baseline; gap: 7px; margin-top: 16px; }
+.status .figure .n { font-family: var(--mono); font-size: 34px; font-weight: 600; letter-spacing: -.03em; }
+.status .figure .u { color: var(--ink-3); font-size: 13px; font-family: var(--mono); }
+
+/* big number + sparkline, echoing the consumption card */
+.trend { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-top: 14px; }
+.trend .n { font-family: var(--mono); font-size: 40px; font-weight: 600; letter-spacing: -.035em; line-height: 1; }
+.trend .u { color: var(--ink-3); font-size: 14px; font-family: var(--mono); margin-left: 6px; }
+.trend .cap { color: var(--ink-2); font-size: 13px; margin-top: 8px; }
+.spark { flex: 0 0 190px; max-width: 190px; }
 
 /* ---------- map ---------- */
-.mapcard { padding: 18px 18px 14px; }
-.maphead { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-.segs { display: inline-flex; background: var(--ground); border-radius: 11px; padding: 3px; gap: 2px; border: 1px solid var(--line); }
+.segs { display: inline-flex; background: var(--bg); border-radius: 12px; padding: 4px; gap: 3px; }
 .seg {
   appearance: none; border: 0; background: transparent; cursor: pointer;
-  font: 600 12px/1 var(--sans); color: var(--ink-2);
-  padding: 8px 13px; border-radius: 8px; transition: background .15s, color .15s;
+  font: 600 12.5px/1 var(--sans); color: var(--ink-2);
+  padding: 8px 12px; border-radius: 9px; transition: background .16s, color .16s;
 }
-.seg[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+.seg[aria-pressed="true"] { background: var(--card); color: var(--accent); box-shadow: var(--shadow); }
 .seg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.canvas-wrap { position: relative; border-radius: 13px; overflow: hidden; background: var(--ground); border: 1px solid var(--line); }
+.canvas-wrap { position: relative; border-radius: var(--r-s); overflow: hidden; margin-top: 14px; background: var(--bg); }
 canvas#map { display: block; width: 100%; height: auto; cursor: crosshair; }
 .pin {
-  position: absolute; width: 15px; height: 15px; margin: -8px 0 0 -8px;
-  border-radius: 50%; border: 2.5px solid #fff; background: var(--accent);
-  box-shadow: 0 0 0 1.5px rgba(11,31,51,.35); pointer-events: none;
+  position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%;
+  border: 3px solid #fff; background: var(--accent);
+  box-shadow: 0 2px 8px rgba(16,26,40,.4); pointer-events: none;
 }
 
-.scalebar { display: flex; align-items: center; gap: 10px; margin-top: 11px; }
-.ramp { flex: 1; height: 8px; border-radius: 4px; }
+.scalebar { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.ramp { flex: 1; height: 7px; border-radius: 4px; }
 .scalebar span { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
 
-.depthrow { display: flex; align-items: center; gap: 11px; margin-top: 13px; }
-.depthrow label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.depthrow { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.depthrow label { font-size: 12px; color: var(--ink-3); font-weight: 600; }
 input[type="range"] { flex: 1; accent-color: var(--accent); }
-.depthval { font-family: var(--mono); font-size: 13px; font-weight: 600; min-width: 62px; text-align: right; }
+.depthval { font-family: var(--mono); font-size: 13px; font-weight: 600; min-width: 60px; text-align: right; }
 
-.dates { display: flex; gap: 6px; margin-top: 14px; overflow-x: auto; padding-bottom: 3px; }
+.dates { display: flex; gap: 7px; margin-top: 16px; overflow-x: auto; padding-bottom: 4px; }
 .date {
-  appearance: none; border: 1px solid var(--line); background: var(--card); cursor: pointer;
+  appearance: none; border: 0; background: var(--bg); cursor: pointer;
   font: 500 12px/1 var(--mono); color: var(--ink-2);
-  padding: 8px 11px; border-radius: 9px; white-space: nowrap; transition: all .15s;
+  padding: 9px 12px; border-radius: 10px; white-space: nowrap; transition: all .16s;
 }
-.date[aria-pressed="true"] { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.date[aria-pressed="true"] { background: var(--accent); color: #fff; }
 .date:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* ---------- metric tiles ---------- */
-.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.tile {
-  background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
-  display: flex; flex-direction: column; gap: 3px;
-}
-.tile .name { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
-.tile .big { font-family: var(--mono); font-size: 25px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; }
-.tile .unit { font-size: 12px; color: var(--ink-3); font-family: var(--mono); }
-.chip {
-  align-self: flex-start; margin-top: 5px; font-size: 11px; font-weight: 600;
-  padding: 3px 9px; border-radius: 999px; letter-spacing: .02em;
-}
-.chip.ok   { background: var(--ok-soft);   color: var(--ok); }
-.chip.warn { background: var(--warn-soft); color: var(--warn); }
-.chip.crit { background: var(--crit-soft); color: var(--crit); }
-
 /* ---------- profile ---------- */
-.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
-.legend i { display: inline-block; width: 15px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
-.legend span { font-size: 12px; color: var(--ink-2); }
+.legend { display: flex; gap: 15px; flex-wrap: wrap; margin: 12px 0 6px; }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.legend span { font-size: 12.5px; color: var(--ink-2); }
 svg { display: block; width: 100%; height: auto; }
-.axis { stroke: var(--line); stroke-width: 1; }
+.axis { stroke: var(--hair); stroke-width: 1; }
 .tick { font: 400 10px var(--mono); fill: var(--ink-3); }
-.axlabel { font: 600 10px var(--sans); fill: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+.axlabel { font: 600 10px var(--sans); fill: var(--ink-3); }
 
 /* ---------- validation ---------- */
-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
-th { text-align: right; font: 600 10px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); padding: 0 0 7px; }
+table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; margin-top: 12px; }
+th { text-align: right; font: 600 11px var(--sans); color: var(--ink-3); padding: 0 0 8px; }
 th:first-child, td:first-child { text-align: left; }
-td { text-align: right; padding: 5px 0; border-top: 1px solid var(--line); }
+td { text-align: right; padding: 7px 0; border-top: 1px solid var(--hair); }
 td.best { color: var(--accent); font-weight: 600; }
 
-.note { font-size: 12px; color: var(--ink-2); line-height: 1.55; margin: 12px 0 0; }
-.note b { color: var(--ink); }
+.note { font-size: 12.5px; color: var(--ink-2); line-height: 1.6; margin: 14px 0 0; }
+.note b { color: var(--ink); font-weight: 600; }
 
-footer { margin-top: 26px; font-size: 12px; color: var(--ink-3); display: flex; gap: 16px; flex-wrap: wrap; }
+footer { margin-top: 24px; font-size: 12px; color: var(--ink-3); display: flex; gap: 18px; flex-wrap: wrap; }
 footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -195,32 +229,60 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
 
   <header class="top">
     <div class="top-left">
-      <p class="eyebrow">INCOIS · SIH26066 · North Indian Ocean</p>
-      <h1>OceanEmbed Console</h1>
-      <p class="sub">Subsurface temperature reconstructed from surface satellites only —
-        <b id="hdr-date">—</b> at <b id="hdr-pos">—</b></p>
+      <h1><span id="hdr-basin">Arabian Sea</span><span class="chev">⌄</span></h1>
+      <p class="place">
+        <span>🌊</span>
+        <span class="mono" id="hdr-pos">18.13°N, 69.13°E</span>
+        <span>·</span>
+        <span class="mono" id="hdr-date">2021-08-29</span>
+      </p>
     </div>
-    <div class="risk">
-      <span class="dot" id="risk-dot"></span>
-      <span>
-        <span class="lbl">Cyclone potential</span><br>
-        <span class="val" id="risk-val">—</span>
-      </span>
+    <div class="score">
+      <span class="face" id="score-face">◍</span>
+      <span>Cyclone potential <b id="score-val">—</b></span>
     </div>
   </header>
 
-  <div class="grid">
+  <div class="row two">
+    <section class="card status">
+      <div class="card-h"><h2>Heat potential</h2><span class="arrow">›</span></div>
+      <p class="card-sub">Above the 26 °C isotherm</p>
+      <div class="figure"><span class="n" id="v-tchp">—</span><span class="u">kJ cm⁻²</span></div>
+      <span class="badge b-ok" id="c-tchp"><span class="tick">✓</span><span>—</span></span>
+    </section>
 
-    <section class="card mapcard">
-      <div class="maphead">
-        <h2 style="margin:0">Basin view</h2>
+    <section class="card status">
+      <div class="card-h"><h2>Warm layer depth</h2><span class="arrow">›</span></div>
+      <p class="card-sub">Where the water drops below 26 °C</p>
+      <div class="figure"><span class="n" id="v-d26">—</span><span class="u">metres</span></div>
+      <span class="badge b-ok" id="c-d26"><span class="tick">✓</span><span>—</span></span>
+    </section>
+  </div>
+
+  <section class="card" style="margin-bottom:16px">
+    <div class="card-h"><h2>Heat potential through 2021</h2><span class="arrow">›</span></div>
+    <div class="trend">
+      <div>
+        <div><span class="n" id="t-now">—</span><span class="u">kJ cm⁻²</span></div>
+        <p class="cap" id="t-cap">at this location</p>
+      </div>
+      <svg class="spark" id="spark" viewBox="0 0 190 62" role="img" aria-label="Heat potential across the year"></svg>
+    </div>
+  </section>
+
+  <div class="row split">
+
+    <section class="card">
+      <div class="card-h">
+        <h2>Basin view</h2>
         <div class="segs" role="group" aria-label="Map layer">
-          <button class="seg" data-layer="t"    aria-pressed="true">Temperature</button>
-          <button class="seg" data-layer="tchp" aria-pressed="false">Heat potential</button>
-          <button class="seg" data-layer="d26"  aria-pressed="false">26 °C depth</button>
-          <button class="seg" data-layer="mld"  aria-pressed="false">Mixed layer</button>
+          <button class="seg" data-layer="t"    aria-pressed="true">Temp</button>
+          <button class="seg" data-layer="tchp" aria-pressed="false">Heat</button>
+          <button class="seg" data-layer="d26"  aria-pressed="false">26 °C</button>
+          <button class="seg" data-layer="mld"  aria-pressed="false">Mixed</button>
         </div>
       </div>
+      <p class="card-sub">Tap anywhere to move the probe</p>
 
       <div class="canvas-wrap" id="canvas-wrap">
         <canvas id="map" width="240" height="100" aria-label="Reconstructed field over the North Indian Ocean"></canvas>
@@ -242,55 +304,29 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
       <div class="dates" id="dates" role="group" aria-label="Date"></div>
     </section>
 
-    <div class="stack">
-
-      <div class="tiles">
-        <div class="tile">
-          <span class="name">Heat potential</span>
-          <span class="big" id="v-tchp">—</span>
-          <span class="unit">kJ cm⁻²</span>
-          <span class="chip ok" id="c-tchp">—</span>
-        </div>
-        <div class="tile">
-          <span class="name">26 °C isotherm</span>
-          <span class="big" id="v-d26">—</span>
-          <span class="unit">metres deep</span>
-          <span class="chip ok" id="c-d26">—</span>
-        </div>
-        <div class="tile">
-          <span class="name">Mixed layer</span>
-          <span class="big" id="v-mld">—</span>
-          <span class="unit">metres deep</span>
-        </div>
-        <div class="tile">
-          <span class="name">At <span id="v-depth-lbl">100 m</span></span>
-          <span class="big" id="v-temp">—</span>
-          <span class="unit">°C reconstructed</span>
-        </div>
-      </div>
-
-      <section class="card">
-        <h2>Vertical profile at this point</h2>
+    <div>
+      <section class="card" style="margin-bottom:16px">
+        <div class="card-h"><h2>Vertical profile</h2><span class="arrow">›</span></div>
+        <p class="card-sub">Reconstructed from the surface alone</p>
         <div class="legend">
           <span><i style="background:var(--accent)"></i>OceanEmbed</span>
-          <span><i style="background:var(--cool)"></i>GLORYS reanalysis</span>
+          <span><i style="background:var(--sea-2)"></i>GLORYS</span>
           <span><i style="background:var(--ink-3)"></i>Climatology</span>
         </div>
-        <svg id="profile" viewBox="0 0 340 260" role="img" aria-label="Temperature against depth"></svg>
-        <p class="note" id="profile-note">Click anywhere on the basin to place a probe.</p>
+        <svg id="profile" viewBox="0 0 340 250" role="img" aria-label="Temperature against depth"></svg>
+        <p class="note" id="profile-note">Tap the basin to place a probe.</p>
       </section>
 
       <section class="card">
-        <h2>Validated against 8,015 Argo floats</h2>
+        <div class="card-h"><h2>Checked against 8,015 floats</h2></div>
+        <p class="card-sub">Argo profiles never seen in training</p>
         <table id="argo-table">
           <thead><tr><th>Depth</th><th>Climatology</th><th>OceanEmbed</th><th>Gain</th></tr></thead>
           <tbody id="argo-body"></tbody>
         </table>
-        <p class="note"><b>These profiles were never seen in training.</b> GLORYS assimilates them,
-          so it is a best case rather than a rival. Argo returns ~11 profiles a day across this
-          basin; the model returns 11,759.</p>
+        <p class="note">Argo returns about <b>11 profiles a day</b> across this basin.
+          This model returns <b>11,759</b>.</p>
       </section>
-
     </div>
   </div>
 
@@ -299,7 +335,6 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
     <span>Tested <b>2020–2021</b>, held out</span>
     <span>U-Net <b>1.93 M</b> params</span>
     <span>Grid <b>0.25° · 15 depths</b></span>
-    <span id="foot-src">Data <b>baked offline</b></span>
   </footer>
 </div>
 
@@ -314,33 +349,31 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
   var M = D.meta, NY = M.ny, NX = M.nx, NYC = M.nyc, NXC = M.nxc, CO = M.coarse;
   var DEPTHS = M.depths;
 
-  // ---- decoding -----------------------------------------------------------
   function bytes(b64) {
     var s = atob(b64), a = new Uint8Array(s.length);
     for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i);
     return a;
   }
   var cache = {};
-  function field(f) {                       // {lo,hi,d} -> {u:Uint8Array,lo,hi}
+  function field(f) {
     if (!f) return null;
     if (!cache[f.d]) cache[f.d] = bytes(f.d);
     return { u: cache[f.d], lo: f.lo, hi: f.hi };
   }
-  function valueAt(f, i, j, nx) {           // 0 means no data
+  function valueAt(f, i, j, nx) {
     var g = field(f); if (!g) return NaN;
     var v = g.u[i * nx + j];
     return v === 0 ? NaN : g.lo + (v - 1) / 254 * (g.hi - g.lo);
   }
   var LAND = bytes(D.land);
 
-  // ---- colour -------------------------------------------------------------
-  // Ramps written as stops and interpolated, so the legend and the pixels can
-  // never disagree — both read this table.
+  // Sea-toned ramps: the reference's world is soft blues, so temperature runs
+  // through them rather than through a hot scientific rainbow.
   var RAMPS = {
-    t:    [[8,48,107],[33,113,181],[107,174,214],[247,239,190],[253,174,97],[227,110,60],[165,30,30]],
-    tchp: [[10,20,45],[52,32,110],[136,42,110],[212,72,66],[246,148,52],[252,229,140]],
-    d26:  [[240,247,252],[158,202,225],[66,146,198],[24,86,153],[9,38,88]],
-    mld:  [[247,243,236],[214,196,166],[173,145,110],[122,94,66],[64,46,30]]
+    t:    [[38,63,110],[62,116,178],[126,177,222],[189,219,238],[247,232,206],[240,178,122],[214,110,88]],
+    tchp: [[233,240,250],[173,205,239],[123,163,225],[110,132,226],[143,110,205],[189,106,163]],
+    d26:  [[240,247,253],[186,215,239],[124,175,219],[64,124,186],[27,72,127]],
+    mld:  [[247,244,238],[219,206,183],[180,161,133],[132,113,90],[79,66,52]]
   };
   function ramp(name, x) {
     var s = RAMPS[name], n = s.length - 1;
@@ -355,9 +388,6 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
     return "linear-gradient(90deg," + out.join(",") + ")";
   }
 
-  // ---- state --------------------------------------------------------------
-  // Opens on 29 August 2021 in the central Arabian Sea: peak cyclone season,
-  // and the day Argo returned no profiles at all in the Bay of Bengal.
   var OPEN_ON = "2021-08-29";
   var state = {
     date: M.dates.indexOf(OPEN_ON) >= 0 ? OPEN_ON : M.dates[M.dates.length - 1],
@@ -371,81 +401,110 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
     return state.layer === "t" ? fr.t[state.depth] : fr[state.layer];
   }
 
-  function land(i, j) { return LAND[i * NX + j] === 1; }
-
-  // Canvas cannot read CSS variables, so resolve the land colour from a probe
-  // element. Hardcoding it would leave land glowing pale on a dark ground.
+  // Canvas cannot read CSS variables, so resolve land from a probe element —
+  // hardcoding it would leave land glowing pale on the dark theme.
   var probe = document.createElement("div");
-  probe.style.cssText = "position:absolute;visibility:hidden;background:var(--line)";
+  probe.style.cssText = "position:absolute;visibility:hidden;background:var(--hair)";
   document.body.appendChild(probe);
   function landRGB() {
     var m = /(\d+)[,\s]+(\d+)[,\s]+(\d+)/.exec(getComputedStyle(probe).backgroundColor);
-    return m ? [+m[1], +m[2], +m[3]] : [214, 223, 231];
+    return m ? [+m[1], +m[2], +m[3]] : [237, 242, 247];
   }
 
   function drawMap() {
     var f = field(currentField()), px = img.data, lc = landRGB();
     for (var i = 0; i < NY; i++) {
       for (var j = 0; j < NX; j++) {
-        // Canvas y grows downward, the grid's latitude grows upward.
-        var src = (NY - 1 - i) * NX + j, dst = (i * NX + j) * 4;
+        var src = (NY - 1 - i) * NX + j, dst = (i * NX + j) * 4;   // canvas y is flipped
         var v = f.u[src];
-        if (v === 0) {                                   // land or no data
-          px[dst] = lc[0]; px[dst + 1] = lc[1]; px[dst + 2] = lc[2]; px[dst + 3] = 255;
-        } else {
+        if (v === 0) { px[dst] = lc[0]; px[dst+1] = lc[1]; px[dst+2] = lc[2]; px[dst+3] = 255; }
+        else {
           var c = ramp(state.layer, (v - 1) / 254);
-          px[dst] = c[0]; px[dst + 1] = c[1]; px[dst + 2] = c[2]; px[dst + 3] = 255;
+          px[dst] = c[0]; px[dst+1] = c[1]; px[dst+2] = c[2]; px[dst+3] = 255;
         }
       }
     }
     cx.putImageData(img, 0, 0);
-    var unit = state.layer === "t" ? " °C" : state.layer === "tchp" ? " kJ" : " m";
-    document.getElementById("scale-lo").textContent = f.lo.toFixed(state.layer === "t" ? 1 : 0) + unit;
-    document.getElementById("scale-hi").textContent = f.hi.toFixed(state.layer === "t" ? 1 : 0) + unit;
+    var dp = state.layer === "t" ? 1 : 0;
+    var unit = state.layer === "t" ? "°C" : state.layer === "tchp" ? "kJ" : "m";
+    document.getElementById("scale-lo").textContent = f.lo.toFixed(dp) + " " + unit;
+    document.getElementById("scale-hi").textContent = f.hi.toFixed(dp) + " " + unit;
     document.getElementById("ramp").style.background = cssRamp(state.layer);
   }
 
-  // ---- readouts -----------------------------------------------------------
-  function chip(el, cls, text) { el.className = "chip " + cls; el.textContent = text; }
+  function badge(el, cls, text) {
+    el.className = "badge " + cls;
+    el.lastElementChild.textContent = text;
+    el.firstElementChild.textContent = cls === "b-ok" ? "✓" : "!";
+  }
 
   function updateReadouts() {
     var fr = D.frames[state.date], i = state.i, j = state.j;
     var lat = M.lat[0] + i * 0.25, lon = M.lon[0] + j * 0.25;
+    document.getElementById("hdr-basin").textContent = lon >= 80 ? "Bay of Bengal" : "Arabian Sea";
+    document.getElementById("hdr-pos").textContent = lat.toFixed(2) + "°N, " + lon.toFixed(2) + "°E";
     document.getElementById("hdr-date").textContent = state.date;
-    document.getElementById("hdr-pos").textContent =
-      lat.toFixed(2) + "°N, " + lon.toFixed(2) + "°E";
 
     var tchp = valueAt(fr.tchp, i, j, NX);
     var d26  = valueAt(fr.d26,  i, j, NX);
-    var mld  = valueAt(fr.mld,  i, j, NX);
-    var temp = valueAt(fr.t[state.depth], i, j, NX);
-
     document.getElementById("v-tchp").textContent = isFinite(tchp) ? tchp.toFixed(0) : "—";
     document.getElementById("v-d26").textContent  = isFinite(d26)  ? d26.toFixed(0)  : "—";
-    document.getElementById("v-mld").textContent  = isFinite(mld)  ? mld.toFixed(0)  : "—";
-    document.getElementById("v-temp").textContent = isFinite(temp) ? temp.toFixed(1) : "—";
-    document.getElementById("v-depth-lbl").textContent = DEPTHS[state.depth] + " m";
+    document.getElementById("t-now").textContent  = isFinite(tchp) ? tchp.toFixed(0) : "—";
 
-    // 60 kJ/cm2 is the operational threshold below which a cyclone tends not to
-    // intensify; 90 is where rapid intensification becomes likely.
-    var ct = document.getElementById("c-tchp"), dot = document.getElementById("risk-dot"),
-        rv = document.getElementById("risk-val");
-    if (!isFinite(tchp)) { chip(ct, "ok", "no data"); rv.textContent = "—"; dot.style.background = "var(--ink-3)"; }
-    else if (tchp >= 90) { chip(ct, "crit", "supports rapid intensification"); rv.textContent = "HIGH"; dot.style.background = "var(--crit)"; }
-    else if (tchp >= 60) { chip(ct, "warn", "sufficient for intensification"); rv.textContent = "ELEVATED"; dot.style.background = "var(--warn)"; }
-    else                 { chip(ct, "ok", "below intensification threshold"); rv.textContent = "LOW"; dot.style.background = "var(--ok)"; }
+    // 60 kJ/cm2 is roughly where a cyclone can keep intensifying; 90 is where
+    // rapid intensification becomes likely.
+    var ct = document.getElementById("c-tchp"),
+        sv = document.getElementById("score-val"), sf = document.getElementById("score-face");
+    if (!isFinite(tchp))      { badge(ct, "b-ok", "no data");                sv.textContent = "—";        sf.textContent = "◍"; }
+    else if (tchp >= 90)      { badge(ct, "b-crit", "supports rapid intensification"); sv.textContent = "High";     sf.textContent = "!"; }
+    else if (tchp >= 60)      { badge(ct, "b-warn", "enough to intensify");  sv.textContent = "Elevated"; sf.textContent = "◍"; }
+    else                      { badge(ct, "b-ok", "below threshold");        sv.textContent = "Low";      sf.textContent = "✓"; }
 
     var cd = document.getElementById("c-d26");
-    if (!isFinite(d26))      chip(cd, "ok", "no data");
-    else if (d26 >= 100)     chip(cd, "crit", "deep warm layer");
-    else if (d26 >= 50)      chip(cd, "warn", "moderate");
-    else                     chip(cd, "ok", "shallow");
+    if (!isFinite(d26))   badge(cd, "b-ok", "no data");
+    else if (d26 >= 100)  badge(cd, "b-crit", "deep warm layer");
+    else if (d26 >= 50)   badge(cd, "b-warn", "moderate");
+    else                  badge(cd, "b-ok", "shallow");
 
     var pin = document.getElementById("pin");
     pin.hidden = false;
     pin.style.left = ((j + 0.5) / NX * 100) + "%";
     pin.style.top = ((NY - 1 - i + 0.5) / NY * 100) + "%";
+
+    drawSpark();
     drawProfile();
+  }
+
+  // ---- sparkline: heat potential here across every baked date --------------
+  function drawSpark() {
+    var svg = document.getElementById("spark"), W = 190, H = 62, P = 5;
+    var vals = M.dates.map(function (d) { return valueAt(D.frames[d].tchp, state.i, state.j, NX); });
+    var ok = vals.filter(isFinite);
+    if (ok.length < 2) { svg.innerHTML = ""; document.getElementById("t-cap").textContent = "no ocean here"; return; }
+    var lo = Math.min.apply(null, ok), hi = Math.max.apply(null, ok), span = hi - lo || 1;
+    var x = function (k) { return P + k / (M.dates.length - 1) * (W - 2 * P); };
+    var y = function (v) { return H - P - (v - lo) / span * (H - 2 * P); };
+
+    var pts = [], area = [];
+    vals.forEach(function (v, k) {
+      if (!isFinite(v)) return;
+      pts.push(x(k).toFixed(1) + "," + y(v).toFixed(1));
+      area.push(x(k).toFixed(1) + "," + y(v).toFixed(1));
+    });
+    var here = M.dates.indexOf(state.date);
+    var out = [
+      '<path d="M' + area[0] + " L" + area.join(" L") + " L" + x(M.dates.length - 1).toFixed(1) +
+        "," + (H - P) + " L" + x(0).toFixed(1) + "," + (H - P) + ' Z" fill="var(--accent-sk)"/>',
+      '<polyline fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" ' +
+        'stroke-linejoin="round" points="' + pts.join(" ") + '"/>'
+    ];
+    if (here >= 0 && isFinite(vals[here])) {
+      out.push('<circle cx="' + x(here).toFixed(1) + '" cy="' + y(vals[here]).toFixed(1) +
+        '" r="4" fill="var(--accent)" stroke="var(--card)" stroke-width="2.5"/>');
+    }
+    svg.innerHTML = out.join("");
+    document.getElementById("t-cap").textContent =
+      "ranges " + lo.toFixed(0) + "–" + hi.toFixed(0) + " here across the year";
   }
 
   // ---- profile ------------------------------------------------------------
@@ -453,34 +512,34 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
     var fr = D.frames[state.date], i = state.i, j = state.j;
     var ic = Math.min(Math.floor(i / CO), NYC - 1), jc = Math.min(Math.floor(j / CO), NXC - 1);
     var series = [
-      { key: "model",  color: "var(--accent)", w: 2.4, v: DEPTHS.map(function (_, k) { return valueAt(fr.t[k], i, j, NX); }) },
-      { key: "glorys", color: "var(--cool)",   w: 1.8, v: DEPTHS.map(function (_, k) { return valueAt(fr.truth[k], ic, jc, NXC); }) },
-      { key: "clim",   color: "var(--ink-3)",  w: 1.5, v: DEPTHS.map(function (_, k) { return valueAt(D.clim[state.date][k], ic, jc, NXC); }) }
+      { color: "var(--accent)", w: 2.6, v: DEPTHS.map(function (_, k) { return valueAt(fr.t[k], i, j, NX); }) },
+      { color: "var(--sea-2)",  w: 1.9, v: DEPTHS.map(function (_, k) { return valueAt(fr.truth[k], ic, jc, NXC); }) },
+      { color: "var(--ink-3)",  w: 1.6, v: DEPTHS.map(function (_, k) { return valueAt(D.clim[state.date][k], ic, jc, NXC); }) }
     ];
     var all = [];
     series.forEach(function (s) { s.v.forEach(function (x) { if (isFinite(x)) all.push(x); }); });
     var svg = document.getElementById("profile");
     if (!all.length) { svg.innerHTML = ""; document.getElementById("profile-note").textContent = "No ocean at this point — pick a wet cell."; return; }
 
-    var L = 44, R = 12, T = 12, B = 34, W = 340, H = 260;
+    var L = 42, R = 10, T = 10, B = 32, W = 340, H = 250;
     var tmin = Math.floor(Math.min.apply(null, all) - 1), tmax = Math.ceil(Math.max.apply(null, all) + 1);
-    // Depth on a mild power scale: the top 200 m is where the signal is, and a
-    // linear axis would squash it into a fifth of the panel.
+    // Mild power scale: the top 200 m carries the signal and a linear axis
+    // would squash it into a fifth of the panel.
     function ty(d) { return T + Math.pow(d / 1000, 0.42) * (H - T - B); }
     function tx(v) { return L + (v - tmin) / (tmax - tmin) * (W - L - R); }
 
     var out = [];
     [0, 50, 100, 200, 500, 1000].forEach(function (d) {
-      var y = ty(d).toFixed(1);
-      out.push('<line class="axis" x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '"/>');
-      out.push('<text class="tick" x="' + (L - 7) + '" y="' + (ty(d) + 3.5).toFixed(1) + '" text-anchor="end">' + d + '</text>');
+      var yy = ty(d);
+      out.push('<line class="axis" x1="' + L + '" y1="' + yy.toFixed(1) + '" x2="' + (W - R) + '" y2="' + yy.toFixed(1) + '"/>');
+      out.push('<text class="tick" x="' + (L - 7) + '" y="' + (yy + 3.5).toFixed(1) + '" text-anchor="end">' + d + '</text>');
     });
     var step = (tmax - tmin) > 18 ? 6 : (tmax - tmin) > 9 ? 3 : 2;
     for (var v = Math.ceil(tmin / step) * step; v <= tmax; v += step) {
-      out.push('<text class="tick" x="' + tx(v).toFixed(1) + '" y="' + (H - B + 15) + '" text-anchor="middle">' + v + '</text>');
+      out.push('<text class="tick" x="' + tx(v).toFixed(1) + '" y="' + (H - B + 16) + '" text-anchor="middle">' + v + '</text>');
     }
-    out.push('<text class="axlabel" x="' + L + '" y="' + (H - 4) + '">Temperature °C</text>');
-    out.push('<text class="axlabel" transform="translate(11,' + (T + 54) + ') rotate(-90)">Depth m</text>');
+    out.push('<text class="axlabel" x="' + L + '" y="' + (H - 3) + '">Temperature °C</text>');
+    out.push('<text class="axlabel" transform="translate(10,' + (T + 52) + ') rotate(-90)">Depth m</text>');
 
     series.forEach(function (s) {
       var pts = [];
@@ -492,10 +551,9 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
 
     var m = series[0].v[state.depth], g = series[1].v[state.depth];
     document.getElementById("profile-note").innerHTML = isFinite(m) && isFinite(g)
-      ? "At <b>" + DEPTHS[state.depth] + " m</b> the reconstruction reads <b>" + m.toFixed(2) +
-        " °C</b> against GLORYS <b>" + g.toFixed(2) + " °C</b> — a gap of <b>" +
-        Math.abs(m - g).toFixed(2) + " °C</b>."
-      : "Click anywhere on the basin to move the probe.";
+      ? "At <b>" + DEPTHS[state.depth] + " m</b> we read <b>" + m.toFixed(2) +
+        " °C</b>, GLORYS <b>" + g.toFixed(2) + " °C</b> — a gap of <b>" + Math.abs(m - g).toFixed(2) + " °C</b>."
+      : "Tap the basin to move the probe.";
   }
 
   // ---- validation table ---------------------------------------------------
@@ -503,7 +561,7 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
     var rows = (D.argo && D.argo.rows) || [], body = document.getElementById("argo-body");
     rows.filter(function (r) { return [50, 75, 100, 150, 200].indexOf(Math.round(r.depth)) >= 0; })
       .forEach(function (r) {
-        var gain = r.gain >= 0 ? "+" + r.gain.toFixed(1) + "%" : r.gain.toFixed(1) + "%";
+        var gain = (r.gain >= 0 ? "+" : "") + r.gain.toFixed(1) + "%";
         body.insertAdjacentHTML("beforeend",
           "<tr><td>" + Math.round(r.depth) + " m</td><td>" + r.clim.toFixed(3) +
           "</td><td class='best'>" + r.model.toFixed(3) + "</td><td>" + gain + "</td></tr>");
@@ -541,16 +599,13 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
     updateReadouts();
   });
 
-  function pick(ev) {
+  cv.addEventListener("click", function (ev) {
     var r = cv.getBoundingClientRect();
-    var x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
-    state.j = Math.max(0, Math.min(NX - 1, Math.floor(x * NX)));
-    state.i = Math.max(0, Math.min(NY - 1, NY - 1 - Math.floor(y * NY)));
+    state.j = Math.max(0, Math.min(NX - 1, Math.floor((ev.clientX - r.left) / r.width * NX)));
+    state.i = Math.max(0, Math.min(NY - 1, NY - 1 - Math.floor((ev.clientY - r.top) / r.height * NY)));
     updateReadouts();
-  }
-  cv.addEventListener("click", pick);
+  });
 
-  // ---- go -----------------------------------------------------------------
   document.getElementById("depthval").textContent = DEPTHS[state.depth] + " m";
   drawMap();
   updateReadouts();
