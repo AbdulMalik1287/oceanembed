@@ -1,6 +1,6 @@
-# SIH26066 — OceanEmbed
+# SIH26066. OceanEmbed
 
-**Title:** OceanEmbed — Satellite Embedding-Based Deep Learning Framework for Reconstruction of
+**Title:** OceanEmbed. Satellite Embedding-Based Deep Learning Framework for Reconstruction of
 Subsurface Ocean Temperature from Surface Satellite Observations
 
 | Field | Value |
@@ -16,12 +16,12 @@ Subsurface Ocean Temperature from Surface Satellite Observations
 ## Task
 
 Reconstruct daily, depth-wise subsurface ocean temperature over the North Indian Ocean
-(5°N–30°N, 45°E–105°E) at 0.25° resolution, using **only surface satellite observations**.
+(5°N-30°N, 45°E-105°E) at 0.25° resolution, using **only surface satellite observations**.
 
 - **Inputs:** SST, SSS, SSH/SLA, surface currents (U, V), surface winds (U, V)
 - **Output depths (m):** 0, 5, 10, 20, 30, 50, 75, 100, 125, 150, 200, 300, 500, 700, 1000
 - **Grid:** 0.25° × 0.25°, daily
-- **Method:** satellite *embeddings* — compact latent representations of the surface state
+- **Method:** satellite *embeddings*, compact latent representations of the surface state
   (CNN / ViT / autoencoder / GNN / attention hybrids) feeding a profile-reconstruction model
 - **Metrics:** correlation, RMSE, bias vs independent observations
 
@@ -39,7 +39,7 @@ Reconstruct daily, depth-wise subsurface ocean temperature over the North Indian
 
 ### Training target (subsurface temperature)
 
-- GLORYS Global Ocean Reanalysis — https://doi.org/10.48670/moi-00021 (variable: `thetao`)
+- GLORYS Global Ocean Reanalysis, https://doi.org/10.48670/moi-00021 (variable: `thetao`)
 
 ### Independent validation
 

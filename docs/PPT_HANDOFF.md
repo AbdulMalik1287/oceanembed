@@ -1,4 +1,4 @@
-# PPT handoff — OceanEmbed (SIH26066)
+# PPT handoff. OceanEmbed (SIH26066)
 
 Everything needed to build the deck without reading the code. Slide copy is
 paste-ready; diagrams are drawn in text for you to redraw in PowerPoint.
@@ -11,8 +11,8 @@ paste-ready; diagrams are drawn in text for you to redraw in PowerPoint.
 ## 1. The one-line pitch
 
 > Satellites see only the ocean's skin. We reconstruct the temperature of the
-> water underneath it — every day, across the whole North Indian Ocean, at
-> depths no satellite can reach — and we validated it against 8,015 floats that
+> water underneath it, every day, across the whole North Indian Ocean, at
+> depths no satellite can reach, and we validated it against 8,015 floats that
 > the model has never seen.
 
 **The differentiator to lead with: this is built and measured, not proposed.**
@@ -20,7 +20,7 @@ Most entries at the idea stage describe an intended approach.
 
 ---
 
-## 2. Figures — where they are, what they show
+## 2. Figures: where they are, what they show
 
 All in `figs/`. Drop them in at full width; they are already sized for slides.
 
@@ -34,14 +34,13 @@ All in `figs/`. Drop them in at full width; they are already sized for slides.
 | `02_acc_map_100m.png` | Optional, results | Where the model has skill, spatially |
 
 **Live demo:** run `python -m http.server 8080` inside `demo/web`, open
-`http://127.0.0.1:8080/index.html`. Or open `demo/web/standalone.html` directly
-— one file, no server, no network.
+`http://127.0.0.1:8080/index.html`. Or open `demo/web/standalone.html` directly, one file, no server, no network.
 
 ---
 
 ## 3. Architecture flow
 
-### A. Data pipeline — acquisition to training-ready cubes
+### A. Data pipeline: acquisition to training-ready cubes
 
 ```
   COPERNICUS MARINE  (one account, six products)
@@ -68,14 +67,14 @@ All in `figs/`. Drop them in at full width; they are already sized for slides.
               │  ALIGNED DAILY CUBES          │
               │  inputs  7 × 100 × 240        │
               │  target 15 × 100 × 240        │
-              │  2014–2021, ~8 GB             │
+              │  2014-2021, ~8 GB             │
               └───────────────────────────────┘
 ```
 
 **Point worth making on this slide:** staged *fetch → build → verify → delete*,
 one year at a time, so 77 GB of raw downloads only ever needs ~10 GB of disk.
 
-### B. Model — the satellite embedding engine
+### B. Model: the satellite embedding engine
 
 ```
    INPUT  11 × 100 × 240
@@ -100,18 +99,17 @@ one year at a time, so 77 GB of raw downloads only ever needs ~10 GB of disk.
    125, 150, 200, 300, 500, 700, 1000 m
 ```
 
-**Say on this slide:** the embedding is not a separate pre-trained autoencoder —
-it is the bottleneck of one network trained end to end on the actual objective,
+**Say on this slide:** the embedding is not a separate pre-trained autoencoder. It is the bottleneck of one network trained end to end on the actual objective,
 so the latent space is optimised for reconstruction rather than for compressing
 the inputs. Encoder = embedding engine, decoder = reconstruction model.
 
 **Why an encoder/decoder at all:** subsurface temperature at a point is *not* a
 function of the surface directly above it. An eddy or a displaced thermocline is
-a pattern hundreds of kilometres wide, readable only from context — which the
+a pattern hundreds of kilometres wide, readable only from context, which the
 encoder's growing receptive field supplies. The skip connections then restore
 the sharp local SST and SLA that fix the mixed layer.
 
-### C. System — how it runs
+### C. System: how it runs
 
 ```
    satellite surface fields (near-real-time twins exist for every input)
@@ -127,7 +125,7 @@ the sharp local SST and SLA that fix the mixed layer.
   netCDF, daily,           • TCHP  cyclone heat potential
   0.25°, 15 depths         • D26   26 °C isotherm depth
   (PS deliverable #4)      • MLD   mixed layer depth
-                           • OHC   heat content 0–700 m
+                           • OHC   heat content 0-700 m
                                   │
                                   ▼
                       REST API  →  operator console
@@ -137,13 +135,13 @@ the sharp local SST and SLA that fix the mixed layer.
 
 ---
 
-## 4. Numbers — copy-paste, do not retype
+## 4. Numbers: copy-paste, do not retype
 
-### Headline skill (train 2014–2019, test 2020 **and** 2021, both held out)
+### Headline skill (train 2014-2019: test 2020 **and** 2021, both held out)
 
 | | mean RMSE | @100 m RMSE | @100 m ACC |
 |---|---|---|---|
-| Climatology (floor) | 0.889 °C | 1.773 °C | — |
+| Climatology (floor) | 0.889 °C | 1.773 °C | - |
 | Per-depth linear | 0.786 °C | 1.485 °C | 0.555 |
 | **OceanEmbed U-Net** | **0.783 °C** | **1.415 °C** | **0.608** |
 
@@ -157,14 +155,14 @@ the sharp local SST and SLA that fix the mixed layer.
 | D26 | 14.3 m | 0.830 |
 | Mixed layer depth | 15.3 m | 0.741 |
 
-### Independent Argo validation — **the honest headline**
+### Independent Argo validation, **the honest headline**
 
-8,015 quality-controlled float profiles, 2020–2021, never seen in training.
+8,015 quality-controlled float profiles, 2020-2021, never seen in training.
 
 | | mean RMSE vs Argo |
 |---|---|
 | Climatology | 0.900 °C |
-| **OceanEmbed** | **0.852 °C** → **+5.3%**, and **+8–11%** through 75–200 m |
+| **OceanEmbed** | **0.852 °C** → **+5.3%**, and **+8-11%** through 75-200 m |
 | GLORYS reanalysis | 0.615 °C |
 
 ### Coverage
@@ -188,30 +186,30 @@ Bay of Bengal averages **3.3 profiles a day**, and has **none at all on 8% of da
 ## 5. Suggested slide order
 
 1. **Title**
-2. **The problem** — the ocean is opaque below the surface; Argo is sparse
-3. **The gap, in one picture** — `06_coverage_gap.png`
-4. **Solution** — surface → embedding → profile (diagram B)
-5. **Technical approach** — diagram A + the grid/harmonisation points
-6. **Results** — `01_skill_by_depth.png` + the skill table
-7. **Why INCOIS cares** — `04_tchp.png`, cyclone heat potential
-8. **Independent validation** — `05_argo_validation.png`, the 5.3%
-9. **Live demo** — the console
+2. **The problem**: the ocean is opaque below the surface; Argo is sparse
+3. **The gap, in one picture**, `06_coverage_gap.png`
+4. **Solution**, surface → embedding → profile (diagram B)
+5. **Technical approach**, diagram A + the grid/harmonisation points
+6. **Results**, `01_skill_by_depth.png` + the skill table
+7. **Why INCOIS cares**, `04_tchp.png`, cyclone heat potential
+8. **Independent validation**, `05_argo_validation.png`, the 5.3%
+9. **Live demo**: the console
 10. **Feasibility, impact, references**
 
 ---
 
 ## 6. Two things to say before a judge says them
 
-**"GLORYS already assimilates Argo — isn't this circular?"**
+**"GLORYS already assimilates Argo, isn't this circular?"**
 Raise it yourself on the validation slide. Against GLORYS we beat climatology by
 11.9%; against real floats, 5.3%. We inherit about three quarters of GLORYS's
 +0.451 °C warm bias at 100 m. Quote the 5.3%. GLORYS's own 0.615 is *not* a fair
-comparison — it assimilated those very profiles, so it is a best case, and it
+comparison. It assimilated those very profiles, so it is a best case, and it
 needs in-situ data and is not available at real-time latency.
 
 **"It is worse than climatology below 300 m."**
 True, and we report it. Surface fields carry almost no information about
-500–1000 m. The useful range is surface to ~300 m — which covers the mixed layer,
+500-1000 m. The useful range is surface to ~300 m, which covers the mixed layer,
 the thermocline, and everything driving heat content and cyclone potential. An
 operational product should serve climatology below 300 m.
 
@@ -221,21 +219,21 @@ operational product should serve climatology below 300 m.
 
 - **The old 3-year numbers**: 13.7%, +22.9%, TCHP 0.858. They came from a
   two-year climatology that was too weak a baseline. Superseded.
-- **"Beats GLORYS"** — it does not, and GLORYS is not the competitor anyway.
+- **"Beats GLORYS"**: it does not, and GLORYS is not the competitor anyway.
 - **Any skill claim below 300 m.**
-- **"Real-time"** — the pipeline *could* run on near-real-time inputs, but we
+- **"Real-time"**: the pipeline *could* run on near-real-time inputs, but we
   have not demonstrated it. Say "designed for near-real-time operation".
 
 ---
 
-## 8. Demo script — 90 seconds
+## 8. Demo script, 90 seconds
 
-1. Open the console. It starts on **29 August 2021**, Arabian Sea — peak cyclone
+1. Open the console. It starts on **29 August 2021**, Arabian Sea, peak cyclone
    season, and a day Argo had **zero** profiles in the Bay of Bengal.
 2. Point at the two tiles: heat potential and the warm-layer depth, read live at
    that point. Note the dashed line in the second illustration is the **real**
    26 °C isotherm depth, not decoration.
-3. **Click into the Bay of Bengal.** Everything updates — the profile redraws,
+3. **Click into the Bay of Bengal.** Everything updates, the profile redraws,
    the tiles re-read, the basin name changes.
 4. Drag the depth slider to 100 m and switch the map to **Heat**. Say: *this is
    the variable that decides whether a cyclone intensifies, and no satellite can

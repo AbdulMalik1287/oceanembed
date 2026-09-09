@@ -3,7 +3,7 @@
 
     python -m demo.precompute
 
-Writes demo/web/data.js — a single file the page loads with a <script> tag, so
+Writes demo/web/data.js, a single file the page loads with a <script> tag, so
 the whole demo runs from the filesystem with no server, no network and no GPU
 box. That matters more than elegance: a demo that needs WiFi is a demo that
 fails in the room.
@@ -29,8 +29,8 @@ OUT = Path(__file__).parent / "web" / "data.js"
 
 YEAR = 2021
 COARSE = 2      # subsampling for the profile-only stacks (GLORYS, climatology)
-# One per month, plus 29 August — the day Argo had zero profiles in the Bay of
-# Bengal, which is the story the coverage figure tells.
+# One per month: plus 29 August, the day Argo had zero profiles in the Bay of
+# Bengal: which is the story the coverage figure tells.
 DATES = [f"{YEAR}-{m:02d}-15" for m in range(1, 13)] + [f"{YEAR}-08-29"]
 
 

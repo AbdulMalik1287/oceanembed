@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 """U-Net mapping surface fields to a subsurface temperature profile per cell.
 
-The encoder compresses the surface state to a coarse, wide-channel bottleneck —
-this is the "satellite embedding" the problem statement asks for, and it can be
+The encoder compresses the surface state to a coarse, wide-channel bottleneck. This is the "satellite embedding" the problem statement asks for, and it can be
 read out directly via ``forward(..., return_embedding=True)``. The decoder is
 the reconstruction model. Skip connections carry the sharp local SST/SLA signal
 past the bottleneck, which otherwise throws away exactly the detail that fixes

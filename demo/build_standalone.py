@@ -3,7 +3,7 @@
 
     python demo/build_standalone.py
 
-Produces demo/web/standalone.html — one file, no server, no sibling files, no
+Produces demo/web/standalone.html, one file, no server, no sibling files, no
 network beyond the webfont (which degrades to the fallback stack). Mail it,
 put it on a USB stick, open it on any laptop in the room.
 """

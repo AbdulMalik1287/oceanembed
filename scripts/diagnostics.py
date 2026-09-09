@@ -2,11 +2,11 @@
 """Operational diagnostics derived from a reconstructed temperature profile.
 
 These are what a hazard-warning centre actually consumes. None of them can be
-computed from SST alone — they all need the vertical structure, which is the
+computed from SST alone, they all need the vertical structure, which is the
 argument for reconstructing it at all.
 
     D26   depth of the 26 degC isotherm (m)
-    TCHP  tropical cyclone heat potential (kJ/cm2) — heat stored above 26 degC.
+    TCHP  tropical cyclone heat potential (kJ/cm2), heat stored above 26 degC.
           The operational predictor of cyclone rapid intensification in the Bay
           of Bengal: a deep warm layer keeps feeding a storm even after its own
           winds have mixed the surface, where a shallow one cools and starves it.
@@ -108,7 +108,7 @@ def _self_check() -> None:
     assert abs(got - expected) / expected < 0.02, f"TCHP {got} vs {expected}"
     assert 70 < got < 90, f"TCHP {got} kJ/cm2 outside a plausible tropical range"
 
-    # Profile B: isothermal 20 degC — never reaches 26, so no warm layer
+    # Profile B: isothermal 20 degC, never reaches 26, so no warm layer
     b = np.full_like(depths, 20.0)
     assert np.isnan(d26(b, depths)), "D26 should be NaN with no warm layer"
     assert tchp(b, depths) == 0.0, "TCHP should be zero with no water above 26"

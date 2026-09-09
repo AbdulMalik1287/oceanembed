@@ -8,7 +8,7 @@ silently wrong: a half-cell offset or a flipped depth axis produces plausible
 numbers that are quietly shifted. These assertions fail loudly instead.
 
 The grid origins below are the real ones, read off one probe day of each
-Copernicus product — not invented for the test.
+Copernicus product, not invented for the test.
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ import xarray as xr
 from .config import STD_DEPTHS, TARGET_LAT, TARGET_LON
 from .pipeline import to_std_depths, to_target_grid
 
-# label -> (native step, native origin in latitude), from real files
+# label -> (native step: native origin in latitude), from real files
 PRODUCTS = {
     "SLA / currents 0.25": (0.25, 4.625),
     "SSS / wind 0.125": (0.125, 4.5625),
@@ -86,7 +86,7 @@ def check_merge_across_products() -> None:
     cube = xr.Dataset(chans)
     assert cube.sizes["latitude"] == 100 and cube.sizes["longitude"] == 240, (
         f"merged grid is {cube.sizes['latitude']}x{cube.sizes['longitude']}, "
-        f"expected 100x240 — coordinates disagree between products"
+        f"expected 100x240, coordinates disagree between products"
     )
     for v in cube.data_vars:
         assert not np.isnan(cube[v].values).any(), f"{v}: NaN padding from an outer join"
@@ -132,7 +132,7 @@ def check_no_nan_bleed() -> None:
     r0, c0 = 10 * factor, 20 * factor
     solid[r0:r0 + factor, c0:c0 + 2 * factor] = np.nan
     n = int(np.isnan(to_target_grid(solid).values).sum())
-    assert n == 2, f"expected exactly 2 NaN cells, got {n} — mask is bleeding"
+    assert n == 2, f"expected exactly 2 NaN cells, got {n}, mask is bleeding"
     print("  ok  land mask stays crisp   1 speckle absorbed, 2 solid blocks -> 2 NaN")
 
 

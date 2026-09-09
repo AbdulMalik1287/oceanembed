@@ -3,8 +3,8 @@
 
 The PS asks for correlation, RMSE and bias. Correlation on absolute temperature
 is close to 1.0 for anything that knows the seasonal cycle, so it flatters every
-model and separates none of them. Anomaly correlation (ACC) — computed after the
-climatology is removed from both prediction and truth — is the number that
+model and separates none of them. Anomaly correlation (ACC), computed after the
+climatology is removed from both prediction and truth, is the number that
 actually says whether the model has skill beyond the calendar. Both are
 reported; ACC is the one to argue from.
 """
@@ -49,7 +49,7 @@ def table(rows, title="") -> str:
     out.append("-" * 50)
     for r in rows:
         if not r.get("n"):
-            out.append(f"{r['depth']:7.0f} {'—':>8} {'—':>8} {'—':>7} {'—':>7} {0:>10}")
+            out.append(f"{r['depth']:7.0f} {'-':>8} {'-':>8} {'-':>7} {'-':>7} {0:>10}")
             continue
         out.append(f"{r['depth']:7.0f} {r['rmse']:8.3f} {r['bias']:8.3f} "
                    f"{r['corr']:7.3f} {r['acc']:7.3f} {r['n']:10d}")

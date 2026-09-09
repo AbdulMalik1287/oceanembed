@@ -46,7 +46,7 @@ def run_climatology(train, test, stats):
 def run_linear(train, test, stats, max_rows=2_000_000, seed=0):
     """Per-depth ordinary least squares on the input channels, pooled over cells.
 
-    The classical comparison. Deliberately has no spatial context — it sees each
+    The classical comparison. Deliberately has no spatial context, it sees each
     cell's surface state alone, which is exactly the limitation the U-Net's
     receptive field is supposed to fix.
     """
@@ -82,7 +82,7 @@ def run_unet(train, test, stats, epochs=40, batch=8, lr=3e-4, width=32, seed=0):
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     mask_t = torch.from_numpy(stats["mask"]).to(dev)
 
-    # Validation split used ONLY to choose the epoch count — never the test year,
+    # Validation split used ONLY to choose the epoch count, never the test year,
     # otherwise "we trained longer" is just tuning on the answer.
     #
     # Interleaved 10-day blocks, every 5th block held out. Two failure modes are
