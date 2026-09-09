@@ -11,7 +11,7 @@ system, and any validation against a gridded Argo product is only
 semi-independent. Comparing directly against the profiles themselves is the
 honest test.
 
-The comparison is three-way on identical samples — reconstruction, GLORYS, and
+The comparison is three-way on identical samples, reconstruction, GLORYS, and
 climatology, each against the same observation. GLORYS's own error is the
 reference: it had these profiles assimilated, so it is close to a best case, and
 the gap between it and the reconstruction is the real cost of using surface data
@@ -72,7 +72,7 @@ def pres_to_depth(p, lat):
     """Pressure (dbar) to depth (m), UNESCO 1983 / Fofonoff & Millard.
 
     EasyCORA reports PRES in dbar. Treating dbar as metres is wrong by about 1%,
-    which is 1 m at 100 m — and in a thermocline running 0.05 degC per metre
+    which is 1 m at 100 m, and in a thermocline running 0.05 degC per metre
     that is a systematic 0.05 degC error smeared across exactly the depths this
     project claims skill at. Cheap to do properly.
     """
@@ -145,7 +145,7 @@ def to_std(prof: dict) -> np.ndarray:
     z, t = z[order], t[order]
     out = np.interp(STD_DEPTHS, z, t, left=np.nan, right=np.nan)
     # np.interp clamps rather than extrapolating, so blank anything outside the
-    # profile's actual span — an Argo float that stopped at 500 m must not be
+    # profile's actual span, an Argo float that stopped at 500 m must not be
     # credited with a value at 1000 m.
     return np.where((STD_DEPTHS >= z[0]) & (STD_DEPTHS <= z[-1]), out, np.nan)
 
@@ -167,7 +167,7 @@ def collect(years) -> Path:
             print(f"  skip {Path(f).name}: {type(e).__name__}: {e}")
     print(f"  {len(profs)} profiles in region")
     if not profs:
-        raise SystemExit("no profiles in the region — check the download filter")
+        raise SystemExit("no profiles in the region, check the download filter")
 
     # Model output and truth for the test years.
     pred = xr.open_mfdataset([str(PRED / f"pred_{y}.nc") for y in years],
@@ -226,8 +226,8 @@ def score() -> None:
         ok = (np.isfinite(obs[:, k]) & np.isfinite(model[:, k])
               & np.isfinite(glorys[:, k]) & np.isfinite(clim[:, k]))
         if ok.sum() < 20:
-            print(f"{z:6.0f} {int(ok.sum()):6d} | {'—':>6} | {'—':>6} | "
-                  f"{'—':>6} {'—':>6} {'—':>6} | {'—':>8}")
+            print(f"{z:6.0f} {int(ok.sum()):6d} | {'-':>6} | {'-':>6} | "
+                  f"{'-':>6} {'-':>6} {'-':>6} | {'-':>8}")
             continue
         r = {"depth": float(z), "n": int(ok.sum())}
         for name, arr in (("clim", clim), ("glorys", glorys), ("model", model)):
@@ -244,7 +244,7 @@ def score() -> None:
     mc, mg, mm = (np.mean(tot[k]) for k in ("clim", "glorys", "model"))
     print(f"{'mean':>6} {'':>6} | {mc:6.3f} | {mg:6.3f} | {mm:6.3f} "
           f"{'':>13} | {100 * (mc - mm) / mc:+7.1f}%")
-    print(f"\nGLORYS is {100 * (mm - mg) / mm:.0f}% better than the reconstruction — the cost of")
+    print(f"\nGLORYS is {100 * (mm - mg) / mm:.0f}% better than the reconstruction, the cost of")
     print("using surface satellite data alone, with no in-situ input.")
 
     ARGO_OUT.mkdir(parents=True, exist_ok=True)

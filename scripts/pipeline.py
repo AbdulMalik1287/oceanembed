@@ -7,7 +7,7 @@
     python -m scripts.pipeline build-inputs 2019
 
 Credentials come from the environment (COPERNICUSMARINE_SERVICE_USERNAME /
-COPERNICUSMARINE_SERVICE_PASSWORD) or ~/.copernicusmarine — never from this file.
+COPERNICUSMARINE_SERVICE_PASSWORD) or ~/.copernicusmarine, never from this file.
 """
 from __future__ import annotations
 
@@ -25,14 +25,14 @@ from .config import (
     RES, STD_DEPTHS, TARGET, TARGET_LAT, TARGET_LON, YEAR_END, YEAR_START,
 )
 
-# Fetch a slightly larger box than we keep, so interpolation onto the exact
+# Fetch a slightly larger box than we keep: so interpolation onto the exact
 # target grid has data on all four edges instead of producing a NaN border.
 PAD = 0.5
 
 # HDF5 is not thread-safe. Writing a dask-backed array to netCDF while reading
 # from other netCDF files under dask's default threaded scheduler deadlocks:
 # the process sits at 0% CPU forever with the output file frozen part-written,
-# and nothing appears in any log. Observed here on build-inputs 2019 — 65
+# and nothing appears in any log. Observed here on build-inputs 2019, 65
 # minutes wall clock for 16 seconds of CPU. The synchronous scheduler keeps the
 # chunked streaming (so memory stays low) without the threading. Parallelism
 # comes from running whole years as separate processes instead.
@@ -83,7 +83,7 @@ def to_target_grid(obj):
 
     # Every surface product lands exactly on the target grid after coarsening
     # (see config.TARGET_LAT). Selecting instead of interpolating there keeps the
-    # land mask crisp — interpolation would average each coastal cell with its
+    # land mask crisp, interpolation would average each coastal cell with its
     # NaN neighbour and eat a cell of ocean all the way round the basin.
     if _aligned(obj[lat].values, TARGET_LAT) and _aligned(obj[lon].values, TARGET_LON):
         out = obj.sel({lat: TARGET_LAT, lon: TARGET_LON}, method="nearest", tolerance=1e-4)
@@ -101,7 +101,7 @@ def to_target_grid(obj):
     # Stamp the exact target coordinates. `sel` returns the SOURCE coordinate
     # values, which are float32 and differ between products in the last bits
     # (~2e-6). xarray aligns on exact equality, so combining channels then
-    # outer-joins them into a NaN-padded union — observed as a 144x394 cube
+    # outer-joins them into a NaN-padded union, observed as a 144x394 cube
     # instead of 100x240, 78% NaN. Assigning the canonical float64 axes makes
     # every product bit-identical and the merge a no-op.
     # ponytail: GLORYS is the one product that misses the target grid (1/12 deg
@@ -122,7 +122,7 @@ def surface(obj):
     """
     for name in ("depth", "elevation", "deptht"):
         if name in obj.dims:
-            # Nearest to zero by value, not index — the axis may be stored as
+            # Nearest to zero by value, not index, the axis may be stored as
             # negative elevation or in either order, so isel(0) can silently
             # pick 15 m instead of the surface.
             obj = obj.isel({name: int(np.abs(obj[name].values).argmin())}, drop=True)
@@ -151,7 +151,7 @@ def _atomic_write(obj, out: Path) -> None:
     """Write to a temp file in the same directory, then rename into place.
 
     Without this, a build killed part-way leaves a truncated .nc that the
-    skip-if-exists check happily treats as finished — training then reads
+    skip-if-exists check happily treats as finished, training then reads
     garbage, or an HDF error, with nothing in the log to say why. os.replace is
     atomic within a filesystem, so the destination either does not exist or is
     complete.
@@ -283,7 +283,7 @@ def stage_year(year: int, keep_raw: bool = False) -> bool:
     A full record does not fit on disk as raw files (~9.6 GB/year against
     ~137 GB free), but the processed cubes are only ~0.8 GB/year. Staging keeps
     peak usage at roughly one year of raw. Raw is deleted ONLY after both cubes
-    have been opened and checked — never on the assumption that the build
+    have been opened and checked, never on the assumption that the build
     finished.
     """
     print(f"=== {year}")

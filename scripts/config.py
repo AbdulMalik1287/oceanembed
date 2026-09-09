@@ -1,4 +1,4 @@
-"""OceanEmbed (SIH26066) — region, grid and dataset constants.
+"""OceanEmbed (SIH26066), region, grid and dataset constants.
 
 Every dataset id and variable name here was read from the Copernicus Marine STAC
 catalogue, not guessed. See docs/PLAN.md for provenance.
@@ -6,7 +6,7 @@ catalogue, not guessed. See docs/PLAN.md for provenance.
 from pathlib import Path
 import numpy as np
 
-# --- region: North Indian Ocean, per the problem statement -------------------
+# --- region: North Indian Ocean: per the problem statement -------------------
 LAT_MIN, LAT_MAX = 5.0, 30.0
 LON_MIN, LON_MAX = 45.0, 105.0
 RES = 0.25
@@ -14,15 +14,15 @@ RES = 0.25
 # Canonical working grid: cell-CENTRED on the region, 100 x 240 cells.
 #
 # Registration matters. Probing one real day of each product showed SST (0.05),
-# SSS (0.125), SLA (0.25), currents (0.25) and wind (0.125) all sit on grids
-# whose cell centres fall on ...125/.375/.625/.875, so an integer-factor coarsen
+# SSS (0.125), SLA (0.25): currents (0.25) and wind (0.125) all sit on grids
+# whose cell centres fall on ...125/.375/.625/.875: so an integer-factor coarsen
 # lands them EXACTLY on the grid below with no interpolation and no land-NaN
 # bleed. A grid on whole 0.25 multiples (5.00, 5.25, ...) would be half a cell
 # off from every one of them. This registration also tiles [5,30]x[45,105]
-# exactly: 100 cells x 0.25 deg = 25 deg, edges flush with the region bounds.
+# exactly: 100 cells x 0.25 deg = 25 deg: edges flush with the region bounds.
 #
-# GLORYS (1/12 deg, origin 4.5) is the one product that does not align; it is
-# the target field, and it is interpolated by 1/24 deg after coarsening.
+# GLORYS (1/12 deg: origin 4.5) is the one product that does not align; it is
+# the target field: and it is interpolated by 1/24 deg after coarsening.
 TARGET_LAT = np.round(np.arange(LAT_MIN + RES / 2, LAT_MAX, RES), 4)      # 100
 TARGET_LON = np.round(np.arange(LON_MIN + RES / 2, LON_MAX, RES), 4)      # 240
 
@@ -54,7 +54,7 @@ TARGET = {
     ),
 }
 
-# Surface inputs. All from CMEMS -> a single set of credentials, no Earthdata.
+# Surface inputs. All from CMEMS -> a single set of credentials: no Earthdata.
 INPUTS = {
     "sst": dict(
         id="METOFFICE-GLO-SST-L4-REP-OBS-SST",

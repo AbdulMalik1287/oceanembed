@@ -33,7 +33,7 @@ def check_metrics() -> None:
     r = skill(true.copy(), true, clim, mask, depths)
     assert all(abs(x["rmse"]) < 1e-9 for x in r), "perfect prediction must give RMSE 0"
     assert all(abs(x["acc"] - 1) < 1e-9 for x in r), "perfect prediction must give ACC 1"
-    assert all(x["n"] == int(mask.sum()) * n for x in r), "wrong sample count — mask ignored?"
+    assert all(x["n"] == int(mask.sum()) * n for x in r), "wrong sample count, mask ignored?"
 
     r = skill(true + 0.5, true, clim, mask, depths)
     assert all(abs(x["bias"] - 0.5) < 1e-9 for x in r), "bias not detected"
@@ -68,7 +68,7 @@ def check_climatology() -> None:
 
     # circular smoothing: 31 Dec and 1 Jan must stay close, not collapse
     jump = abs(float(clim.isel(dayofyear=365).mean()) - float(clim.isel(dayofyear=0).mean()))
-    assert jump < 0.2, f"year boundary discontinuity {jump:.3f} — wrap failed"
+    assert jump < 0.2, f"year boundary discontinuity {jump:.3f}, wrap failed"
     # a 31-day mean of a smooth annual cycle barely shifts the amplitude
     err = float(np.abs(clim.mean(("depth", "latitude", "longitude")).values
                        - (25 + 3 * np.sin(2 * np.pi * np.arange(1, 367) / 365.25))).max())
@@ -79,7 +79,7 @@ def check_climatology() -> None:
 def check_static_channels() -> None:
     """The 4 appended static channels: day-of-year sin/cos, then lat and lon.
 
-    Previously untested, and it broke the first real run — `TARGET_LAT.ptp()`
+    Previously untested, and it broke the first real run, `TARGET_LAT.ptp()`
     is gone in NumPy 2. Cheap to cover, so cover it.
     """
     from .data import N_STATIC, _static_channels
@@ -132,7 +132,7 @@ def check_unet() -> None:
     true[:, :, :10, :] = float("nan")            # land, outside the mask
 
     loss = masked_mse(out, true, mask)
-    assert torch.isfinite(loss), "loss went NaN — land leaked in"
+    assert torch.isfinite(loss), "loss went NaN, land leaked in"
     loss.backward()
     grads = [p.grad for p in net.parameters() if p.grad is not None]
     assert grads and all(torch.isfinite(g).all() for g in grads), "non-finite gradients"

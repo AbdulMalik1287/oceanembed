@@ -7,7 +7,7 @@
 
 <style>
 /* Committed light design. The reference is a bright, near-white app, so this
-   deliberately does NOT follow the OS to dark — every colour is painted
+   deliberately does NOT follow the OS to dark, every colour is painted
    explicitly and the page looks the same on any machine. */
 :root {
   color-scheme: light;
@@ -174,14 +174,14 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
       <p class="place"><span>🌊</span><span class="mono" id="hdr-pos">18.13°N, 69.13°E</span>
         <span>·</span><span class="mono" id="hdr-date">2021-08-29</span></p>
     </div>
-    <div class="pill"><span class="face" id="pill-face">◍</span><b id="pill-val">—</b></div>
+    <div class="pill"><span class="face" id="pill-face">◍</span><b id="pill-val">-</b></div>
   </div>
 
   <div class="deck">
 
     <div class="r3">
       <section class="card tile">
-        <h2 id="t1-title">—</h2>
+        <h2 id="t1-title">-</h2>
         <p class="sub" id="t1-sub">Heat potential</p>
         <div class="art">
           <svg viewBox="0 0 120 116" aria-hidden="true">
@@ -206,7 +206,7 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
       </section>
 
       <section class="card tile">
-        <h2 id="t2-title">—</h2>
+        <h2 id="t2-title">-</h2>
         <p class="sub">Warm layer to 26 °C</p>
         <div class="art">
           <svg viewBox="0 0 120 116" aria-hidden="true">
@@ -232,7 +232,7 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
         <p class="sub">Energy stored above 26 °C</p>
         <div class="metric">
           <div>
-            <div><span class="n" id="m-now">—</span><span class="u">kJ cm⁻²</span></div>
+            <div><span class="n" id="m-now">-</span><span class="u">kJ cm⁻²</span></div>
             <p class="cap" id="m-cap">across 2021 at this point</p>
           </div>
           <svg class="spark" id="spark" viewBox="0 0 176 66" role="img" aria-label="Heat potential across the year"></svg>
@@ -247,7 +247,7 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
           <canvas id="map" width="240" height="100" aria-label="Reconstructed field"></canvas>
           <div class="pin" id="pin" hidden></div>
         </div>
-        <div class="scalebar"><span id="scale-lo">—</span><div class="ramp" id="ramp"></div><span id="scale-hi">—</span></div>
+        <div class="scalebar"><span id="scale-lo">-</span><div class="ramp" id="ramp"></div><span id="scale-hi">-</span></div>
         <div class="segs" role="group" aria-label="Layer">
           <button class="seg" data-layer="t"    aria-pressed="true">Temperature</button>
           <button class="seg" data-layer="tchp" aria-pressed="false">Heat</button>
@@ -290,8 +290,8 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
   </div>
 
   <footer>
-    <span>Trained <b>2014–2019</b></span>
-    <span>Tested <b>2020–2021</b>, held out</span>
+    <span>Trained <b>2014-2019</b></span>
+    <span>Tested <b>2020-2021</b>, held out</span>
     <span>U-Net <b>1.93 M</b> params</span>
     <span>Grid <b>0.25° · 15 depths</b></span>
   </footer>
@@ -399,8 +399,8 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
         pv = document.getElementById("pill-val"), pf = document.getElementById("pill-face");
     if (!isFinite(tchp)) {
       t1.textContent = "No data"; t1s.textContent = "Land or no ocean here";
-      chk.textContent = "–"; chk.style.background = "var(--ink-3)";
-      pv.textContent = "—"; pf.textContent = "◍";
+      chk.textContent = "-"; chk.style.background = "var(--ink-3)";
+      pv.textContent = "-"; pf.textContent = "◍";
     } else {
       var high = tchp >= 90, mid = tchp >= 60;
       t1.textContent = high ? "High" : mid ? "Elevated" : "Low";
@@ -423,7 +423,7 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
       line.setAttribute("y1", y.toFixed(1)); line.setAttribute("y2", y.toFixed(1));
     }
 
-    document.getElementById("m-now").textContent = isFinite(tchp) ? tchp.toFixed(0) : "—";
+    document.getElementById("m-now").textContent = isFinite(tchp) ? tchp.toFixed(0) : "-";
 
     var pin = document.getElementById("pin");
     pin.hidden = false;
@@ -458,7 +458,7 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
     }
     svg.innerHTML = out.join("");
     document.getElementById("m-cap").textContent =
-      "ranges " + lo.toFixed(0) + "–" + hi.toFixed(0) + " here across 2021";
+      "ranges " + lo.toFixed(0) + "-" + hi.toFixed(0) + " here across 2021";
   }
 
   function drawProfile() {
@@ -472,7 +472,7 @@ footer b { color: var(--ink-2); font-family: var(--mono); font-weight: 500; }
     var all = [];
     series.forEach(function (s) { s.v.forEach(function (x) { if (isFinite(x)) all.push(x); }); });
     var svg = document.getElementById("profile");
-    if (!all.length) { svg.innerHTML = ""; document.getElementById("profile-note").textContent = "No ocean here — pick a wet cell."; return; }
+    if (!all.length) { svg.innerHTML = ""; document.getElementById("profile-note").textContent = "No ocean here, pick a wet cell."; return; }
 
     var L = 40, R = 10, T = 10, B = 32, W = 340, H = 230;
     var tmin = Math.floor(Math.min.apply(null, all) - 1), tmax = Math.ceil(Math.max.apply(null, all) + 1);

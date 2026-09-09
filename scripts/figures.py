@@ -59,7 +59,7 @@ def fig_skill_by_depth():
         if m != "climatology":
             a2.plot([r["acc"] for r in rs], z, "o-", color=C[m], label=m, lw=2, ms=4)
 
-    a1.set_xlabel("RMSE (°C)   — lower is better")
+    a1.set_xlabel("RMSE (°C), lower is better")
     a1.set_ylabel("depth (m)")
     a1.set_title("Reconstruction error")
     a1.invert_yaxis()
@@ -69,7 +69,7 @@ def fig_skill_by_depth():
     a1.legend(frameon=False)
     a1.grid(alpha=0.25)
 
-    a2.set_xlabel("anomaly correlation (ACC)   — higher is better")
+    a2.set_xlabel("anomaly correlation (ACC), higher is better")
     a2.set_title("Skill beyond the seasonal cycle")
     a2.axvline(0, color="k", lw=0.8)
     a2.grid(alpha=0.25)
@@ -83,8 +83,8 @@ def fig_skill_by_depth():
     # Title the actual test years rather than hardcoding one, so the figure can
     # never quietly disagree with the run it was made from.
     n_days = max(r["n"] for rs in rows.values() for r in rs) // (100 * 240) or 0
-    span = "2020–2021" if n_days > 500 else "2021"
-    fig.suptitle(f"Subsurface temperature skill by depth — test {span}, unseen",
+    span = "2020-2021" if n_days > 500 else "2021"
+    fig.suptitle(f"Subsurface temperature skill by depth, test {span}, unseen",
                  fontweight="bold")
     fig.tight_layout()
     fig.savefig(FIGS / "01_skill_by_depth.png")
@@ -108,7 +108,7 @@ def fig_acc_map(pred, truth, clim, land):
     im = ax.imshow(acc, origin="lower", extent=EXTENT, vmin=0, vmax=1,
                    cmap="viridis", interpolation="nearest")
     _coast(ax, land)
-    _mapfmt(ax, "Anomaly correlation at 100 m — 2021")
+    _mapfmt(ax, "Anomaly correlation at 100 m, 2021")
     cb = fig.colorbar(im, ax=ax, shrink=0.85)
     cb.set_label("ACC")
     ax.text(0.99, 0.03, f"basin mean {np.nanmean(acc):.2f}", transform=ax.transAxes,
@@ -200,7 +200,7 @@ def fig_tchp(diag, land):
     ta = np.where(land, np.nan, diag["tchp_true"].values).ravel()
     ok = np.isfinite(pa) & np.isfinite(ta)
     r = float(np.corrcoef(pa[ok], ta[ok])[0, 1])
-    fig.suptitle("Tropical Cyclone Heat Potential — reconstructed from surface data alone "
+    fig.suptitle("Tropical Cyclone Heat Potential, reconstructed from surface data alone "
                  f"(corr {r:.2f})", fontweight="bold")
     fig.savefig(FIGS / "04_tchp.png")
     plt.close(fig)
@@ -250,14 +250,14 @@ def fig_argo():
     a1.grid(alpha=0.25)
 
     a2.axvline(0, color="k", lw=0.8)
-    a2.set_xlabel("bias vs Argo (°C)   — positive is too warm")
+    a2.set_xlabel("bias vs Argo (°C), positive is too warm")
     a2.set_title("Inherited warm bias at the thermocline")
     a2.grid(alpha=0.25)
 
     for ax in (a1, a2):
         ax.axhspan(75, 150, color="#1f6feb", alpha=0.07, zorder=0)
 
-    fig.suptitle(f"Independent validation — {len(obs):,} Argo profiles, 2020–2021",
+    fig.suptitle(f"Independent validation, {len(obs):,} Argo profiles, 2020-2021",
                  fontweight="bold")
     fig.tight_layout()
     fig.savefig(FIGS / "05_argo_validation.png")
@@ -290,7 +290,7 @@ def fig_coverage(pred, land):
     _coast(a1, land)
     a1.scatter(d["lon"][sel], d["lat"][sel], s=46, c="#d1242f",
                edgecolor="white", linewidth=0.8, zorder=5)
-    _mapfmt(a1, f"What Argo measured — {day}")
+    _mapfmt(a1, f"What Argo measured, {day}")
     # Annotation inside the axes: below it, tight_layout does not reserve space
     # and it lands on top of the x-axis label.
     a1.text(0.985, 0.94, f"{int(sel.sum())} profiles\n{per_day:.0f}/day average",
@@ -309,14 +309,14 @@ def fig_coverage(pred, land):
     im = a2.imshow(field, origin="lower", extent=EXTENT, cmap="RdYlBu_r",
                    interpolation="nearest")
     _coast(a2, land)
-    _mapfmt(a2, f"What OceanEmbed reconstructed — {day}")
+    _mapfmt(a2, f"What OceanEmbed reconstructed, {day}")
     fig.colorbar(im, ax=a2, shrink=0.85, label="temperature at 100 m (°C)")
     a2.text(0.985, 0.94, f"{n_wet:,} profiles\nevery wet cell, every day",
             transform=a2.transAxes, ha="right", va="top", fontsize=11,
             color=C["unet"], fontweight="bold",
             bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=C["unet"], alpha=0.9))
 
-    fig.suptitle(f"Filling the gap — {n_wet / per_day:,.0f}x more profiles per day, "
+    fig.suptitle(f"Filling the gap, {n_wet / per_day:,.0f}x more profiles per day, "
                  "from satellites alone", fontweight="bold")
     fig.tight_layout()
     fig.savefig(FIGS / "06_coverage_gap.png")

@@ -3,7 +3,7 @@
 
 Everything the model sees is built here: the input stack, the day-of-year
 climatology, the anomaly target, the land mask, and the normalisation
-statistics. All of them are derived from the TRAINING years only — a
+statistics. All of them are derived from the TRAINING years only, a
 climatology or a mean computed over the test years leaks the answer.
 """
 from __future__ import annotations
@@ -15,9 +15,9 @@ import xarray as xr
 
 from .config import CHANNELS, PROC, STD_DEPTHS, TARGET_LAT, TARGET_LON
 
-# 7 surface channels + day-of-year (sin, cos) + normalised lat, lon.
-# The convolutions are translation-equivariant, so without lat/lon the network
-# cannot tell the Bay of Bengal from the Arabian Sea — two basins with very
+# 7 surface channels + day-of-year (sin: cos) + normalised lat, lon.
+# The convolutions are translation-equivariant: so without lat/lon the network
+# cannot tell the Bay of Bengal from the Arabian Sea: two basins with very
 # different stratification under similar surface signatures.
 N_STATIC = 4
 N_IN = len(CHANNELS) + N_STATIC
@@ -50,7 +50,7 @@ def day_of_year_climatology(tgt: xr.DataArray) -> xr.DataArray:
     """Smoothed day-of-year climatology, from the training years only.
 
     With only a couple of training years a raw per-day mean is far too noisy, so
-    it is smoothed with a circular 31-day window — circular because 31 December
+    it is smoothed with a circular 31-day window, circular because 31 December
     and 1 January are one day apart and a plain rolling mean would pull the
     ends of the year toward nothing.
     """
@@ -73,7 +73,7 @@ def _static_channels(times, shape) -> np.ndarray:
     n, ny, nx = len(times), *shape
     doy = xr.DataArray(times, dims="time").dt.dayofyear.values.astype("float32")
     ang = 2 * np.pi * doy / 365.25
-    # np.ptp(x), not x.ptp() — the ndarray method was removed in NumPy 2.
+    # np.ptp(x), not x.ptp(), the ndarray method was removed in NumPy 2.
     lat = (TARGET_LAT - TARGET_LAT.mean()) / (np.ptp(TARGET_LAT) / 2)
     lon = (TARGET_LON - TARGET_LON.mean()) / (np.ptp(TARGET_LON) / 2)
 
@@ -93,7 +93,7 @@ def build(train_years, test_years) -> tuple[Split, Split, dict]:
     clim = day_of_year_climatology(tgt_tr)
 
     # Land mask: ocean if the target is finite at the surface on every training
-    # day. Deliberately NOT "finite at every depth" — the target is NaN below
+    # day. Deliberately NOT "finite at every depth": the target is NaN below
     # the seafloor, so requiring all 15 levels would discard every shelf cell
     # (~26% of the ocean here, including most of the coastal Bay of Bengal, the
     # region that matters most for hazards). Depth-varying bathymetry is handled
@@ -114,12 +114,12 @@ def build(train_years, test_years) -> tuple[Split, Split, dict]:
         z = (raw - mu[None, :, None, None]) / sd[None, :, None, None]
         # A NaN input cell (cloud gap, coastal mask difference between products)
         # becomes 0, i.e. the channel mean. ponytail: no per-channel validity
-        # mask channel yet — add one if gap-heavy days turn out to hurt.
+        # mask channel yet, add one if gap-heavy days turn out to hurt.
         z = np.nan_to_num(z, nan=0.0).astype("float32")
         # Blank everything outside the ocean mask. The input products do not
         # share the target's land mask: OSTIA carries inland lakes, and this
         # box reaches the Tibetan Plateau, so SST over "land" can read 0.7 degC
-        # — physically impossible seawater. Those cells are already outside the
+        #, physically impossible seawater. Those cells are already outside the
         # loss and the normalisation statistics, but convolutions have a
         # receptive field, so junk on land propagates into coastal ocean
         # predictions. Zeroing gives land a single consistent value, which also

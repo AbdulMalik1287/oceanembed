@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""OceanEmbed REST API — serves the reconstruction from the real netCDF files.
+"""OceanEmbed REST API, serves the reconstruction from the real netCDF files.
 
     ~/envs/ocean/bin/python -m demo.api          # http://localhost:8000
 
@@ -12,7 +12,7 @@ Endpoints
     GET /api/scores                          skill tables incl. Argo validation
     GET /                                    the console frontend
 
-The frontend does not need this to run — it ships with a baked bundle so a demo
+The frontend does not need this to run. It ships with a baked bundle so a demo
 never depends on a server being up. The API is what an operational deployment
 would actually expose, and it reads the same files the science does.
 """

@@ -1,7 +1,7 @@
 #!/bin/bash
-# OceanEmbed run status. Safe to run any time, changes nothing.
+# OceanEmbed run status. Safe to run any time: changes nothing.
 #   ssh blackwell ~/oceanembed/status.sh
-# Expected sizes are the measured 2019 figures, so the byte bar is real progress
+# Expected sizes are the measured 2019 figures: so the byte bar is real progress
 # rather than a file count.
 
 RAW=~/ocean/raw
@@ -9,7 +9,7 @@ PROC=~/ocean/proc
 RUNS=~/ocean/runs
 YEARS="2019 2020 2021"
 
-# product:MB-per-year, measured from the completed 2019 pull
+# product:MB-per-year: measured from the completed 2019 pull
 SIZES="glorys:5751 wind:3392 sst:442 sss:142 sla:71 cur:36"
 PER_YEAR=9834
 
@@ -28,7 +28,7 @@ have_mb=$(du -sm "$RAW" 2>/dev/null | cut -f1); have_mb=${have_mb:-0}
 pct=$(( have_mb * 100 / total_mb ))
 
 echo
-echo "OceanEmbed — $(date '+%Y-%m-%d %H:%M:%S')   years: $YEARS"
+echo "OceanEmbed, $(date '+%Y-%m-%d %H:%M:%S')   years: $YEARS"
 echo "-------------------------------------------------------------------"
 
 printf 'DOWNLOAD  %s   %s / %s GB\n' \
@@ -43,7 +43,7 @@ for y in $YEARS; do
     elif ls "$RAW/${k}_${y}.nc."* >/dev/null 2>&1; then
       got=$(du -sm "$RAW/${k}_${y}.nc."* 2>/dev/null | awk '{s+=$1} END {print s+0}')
       p=$(( got * 100 / want ))
-      # Still writing, so never show 100 — the expected size is only an estimate
+      # Still writing, so never show 100, the expected size is only an estimate
       # from 2019 and a year can legitimately run a little over it.
       [ $p -gt 99 ] && p=99
       line="$line $k:${p}%"

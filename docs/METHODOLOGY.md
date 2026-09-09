@@ -5,7 +5,7 @@ How OceanEmbed is actually implemented, stage by stage. For the problem statemen
 
 ## 1. The learning problem
 
-One training sample is **one calendar day over the whole basin** — image-to-image, not per-pixel
+One training sample is **one calendar day over the whole basin**, image-to-image, not per-pixel
 regression.
 
 ```
@@ -13,23 +13,23 @@ X : (11, 100, 240)   one day of surface state
 Y : (15, 100, 240)   the same day, temperature at 15 standard depths
 ```
 
-2019–2020 gives 731 samples, 2021 gives 365 held out for test. This is a small dataset by
-deep-learning standards, and it is the binding constraint on model capacity — not compute.
+2019-2020 gives 731 samples, 2021 gives 365 held out for test. This is a small dataset by
+deep-learning standards, and it is the binding constraint on model capacity, not compute.
 
 There is **no lead time**. Input day *t* produces output day *t*. This is reconstruction of the
 vertical dimension satellites cannot see, not forecasting.
 
 ## 2. Grid and region
 
-North Indian Ocean, 5–30°N by 45–105°E, at 0.25°: **100 × 240 cells**, cell-centred on
-5.125–29.875 N and 45.125–104.875 E.
+North Indian Ocean, 5-30°N by 45-105°E, at 0.25°: **100 × 240 cells**, cell-centred on
+5.125-29.875 N and 45.125-104.875 E.
 
 The registration was chosen from real files rather than convention. Probing one day of each product
 showed SST (0.05°), SSS (0.125°), SLA (0.25°), currents (0.25°) and wind (0.125°) all have cell
 centres on `…125/.375/.625/.875`. On this grid each of them reaches the target by an exact
 integer-factor area-mean coarsen with **no interpolation at all**, which keeps the land mask sharp.
 A grid on whole 0.25° multiples would have been half a cell off from every one of them, and
-interpolating across that offset averages each coastal cell with its land neighbour — measured on
+interpolating across that offset averages each coastal cell with its land neighbour, measured on
 real DUACS data, that pushed the domain from 48.4% NaN to 50.5%, discarding ~515 ocean cells per
 day around the basin rim.
 
@@ -45,7 +45,7 @@ Six `copernicusmarine.subset` calls per year, bbox-clipped server-side with 0.5�
 regrid has data on all four edges instead of a NaN border. One file per product per year, resumable,
 aborts under 25 GB free.
 
-All six products come from Copernicus Marine, so a **single account** covers everything — the CMEMS
+All six products come from Copernicus Marine, so a **single account** covers everything. The CMEMS
 currents and wind products replace the PODAAC OSCAR/CCMP suggestions in the PS, avoiding a second
 credential and CCMP's global-file distribution which has no bbox subsetting.
 
@@ -81,7 +81,7 @@ GLORYS's 36 native levels between 0 and 1062 m onto the 15 the PS specifies. Onl
 extrapolation, and only 0.49 m past the shallowest native level.
 
 `surface()` drops singleton vertical axes from the surface products, choosing the level nearest zero
-**by value** — picking by index would silently take 15 m instead of the surface for currents,
+**by value**, picking by index would silently take 15 m instead of the surface for currents,
 whose axis may be stored as negative elevation in either order.
 
 Wind is averaged from hourly to daily **on its native grid** before regridding, so the day boundary
@@ -94,24 +94,24 @@ Output: `inputs_YYYY.nc` (7 channels) and `target_YYYY.nc` (15 depths), identica
 This is where the modelling decisions live. **Every statistic below is computed from the training
 years only.**
 
-1. **Climatology** — group the training target by day-of-year, mean, smooth with a 31-day *circular*
+1. **Climatology**, group the training target by day-of-year, mean, smooth with a 31-day *circular*
    window so 31 December and 1 January stay continuous.
-2. **Anomaly target** — `Y = target − climatology`. The model never predicts absolute temperature,
+2. **Anomaly target**, `Y = target - climatology`. The model never predicts absolute temperature,
    so its score reflects only what it adds beyond the seasonal cycle.
-3. **Per-depth normalisation** — divide the anomaly by its per-depth training standard deviation.
+3. **Per-depth normalisation**, divide the anomaly by its per-depth training standard deviation.
    This replaces hand-tuned depth weights: unnormalised, the near-constant 1000 m level and the
    highly variable surface enter the loss on wildly different scales and the thermocline is ignored.
-4. **Land mask** — ocean where the target is finite at the surface on every training day.
+4. **Land mask**, ocean where the target is finite at the surface on every training day.
    Deliberately *not* "finite at every depth": the target is NaN below the seafloor, so requiring
    all 15 levels discards every shelf cell (~26% of the ocean here, including most of the coastal
    Bay of Bengal). Depth-varying bathymetry is handled in the loss and the metrics, which intersect
-   this mask with `isfinite(truth)` — a shelf cell trains the levels above the seabed and is skipped
+   this mask with `isfinite(truth)`, a shelf cell trains the levels above the seabed and is skipped
    below it.
-5. **Input normalisation** — per-channel mean and standard deviation over wet cells. Residual NaNs
+5. **Input normalisation**, per-channel mean and standard deviation over wet cells. Residual NaNs
    (cloud gaps, differing coastal masks between products) become 0, the channel mean.
-6. **Static channels** — day-of-year sin/cos plus normalised latitude and longitude, appended to the
+6. **Static channels**, day-of-year sin/cos plus normalised latitude and longitude, appended to the
    7 surface fields for 11 total. Convolutions are translation-equivariant, so without position the
-   network cannot distinguish the Bay of Bengal from the Arabian Sea — two basins with very
+   network cannot distinguish the Bay of Bengal from the Arabian Sea, two basins with very
    different stratification under similar surface signatures.
 
 ## 6. Architecture
@@ -121,7 +121,7 @@ U-Net, **1,929,775 parameters**, width 32, depth 3.
 ```
 input       (11, 100, 240)    7 surface channels + doy sin/cos + lat + lon
    │ encoder: 32 → 64 → 128, halving spatially at each step
-bottleneck  (256, 13, 30)     99,840 values — the satellite embedding, 2.64x compression
+bottleneck  (256, 13, 30)     99,840 values, the satellite embedding, 2.64x compression
    │ decoder: 128 → 64 → 32, each level concatenated with its encoder skip
 output      (15, 100, 240)    temperature at the 15 standard depths
 ```
@@ -137,7 +137,7 @@ reconstruction model. No separate autoencoder pre-training stage is required.
 
 Why the encoder/decoder shape suits the physics: subsurface temperature at a point is not a function
 of the surface directly above it. A mesoscale eddy or a displaced thermocline is a pattern hundreds
-of kilometres across, legible only from context — which the growing receptive field supplies. The
+of kilometres across, legible only from context, which the growing receptive field supplies. The
 skip connections then restore the sharp local SST and SLA values that fix the mixed layer.
 
 Training: AdamW at 3e-4, cosine decay, weight decay 1e-4, batch 8, 40 epochs, bf16 autocast, masked
@@ -147,22 +147,22 @@ MSE on the per-depth-normalised anomaly. **65 seconds** on one MIG slice.
 
 Scored through the identical code path, so the comparison is not confounded by scoring differences.
 
-- **Climatology** — predict anomaly zero. The floor. A model that does not beat this has learned
+- **Climatology**, predict anomaly zero. The floor. A model that does not beat this has learned
   nothing the calendar did not already know.
-- **Linear** — per-depth ordinary least squares on the 11 channels, pooled over cells. Deliberately
+- **Linear**, per-depth ordinary least squares on the 11 channels, pooled over cells. Deliberately
   has *no* spatial context: each cell sees only its own surface state. It exists to isolate how much
   of the U-Net's skill comes from context rather than from the temperature directly overhead.
 
 ## 8. Evaluation
 
 Predictions are returned to °C (`× per-depth std + climatology`) before scoring. Per depth: RMSE,
-bias, correlation, and **ACC** — correlation after removing the climatology from both prediction and
+bias, correlation, and **ACC**, correlation after removing the climatology from both prediction and
 truth.
 
 ACC is the metric to argue from. Plain correlation on absolute temperature sits near 0.9 for
 anything that knows the seasonal cycle, so it flatters every model equally and separates none.
 
-**Split discipline:** train 2019–2020, test 2021. Never a random-day split — consecutive days are
+**Split discipline:** train 2019-2020, test 2021. Never a random-day split, consecutive days are
 near-identical, and a random split manufactures ~0.99 correlation from autocorrelation alone.
 
 ## 9. Verification
@@ -171,7 +171,7 @@ near-identical, and a random split manufactures ~0.99 correlation from autocorre
 diagnostics. None need network or data:
 
 - Regrid correctness at every real product registration, including a half-cell-offset grid
-- Coordinates **bit-exact** against the target axes, not merely close — the failure mode requires
+- Coordinates **bit-exact** against the target axes, not merely close: the failure mode requires
   exact equality, and an `allclose` check passed while the pipeline was broken
 - Cross-product merge stays 100 × 240 with no NaN padding
 - Land mask stays crisp: an isolated land speckle is absorbed by the block mean, two fully-land
@@ -189,11 +189,10 @@ diagnostics. None need network or data:
   at the coast. Inputs do not. Fixable with a masked conservative regrid if coastal skill matters.
 - **No per-channel validity mask.** NaN inputs are filled with the channel mean; gap-heavy days are
   not flagged to the network.
-- **Two-year climatology.** Measurably biased against the test year — see
+- **Two-year climatology.** Measurably biased against the test year, see
   [`RESULTS.md`](RESULTS.md). The CMEMS long-term monthly climatology is the fix.
 - **Pre-2010 SSS is a reconstruction, not a satellite retrieval.** No satellite salinity sensor
-  existed before SMOS, so the multi-observation product likely ingests in-situ data in early years —
-  a mild leakage path when the target is also in-situ-informed. The PS names this product
+  existed before SMOS, so the multi-observation product likely ingests in-situ data in early years, a mild leakage path when the target is also in-situ-informed. The PS names this product
   explicitly, but it should be disclosed rather than left for a reviewer to find.
 - **GLORYS is a reanalysis that assimilates SST, altimetry and Argo.** Training against it is partly
   emulating a data-assimilation system, and gridded-Argo validation is therefore only
